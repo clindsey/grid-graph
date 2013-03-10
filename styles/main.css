@@ -1,0 +1,36 @@
+@import url("../vendor/bootstrap/2.3.0/css/bootstrap.css");
+@import url("../vendor/elusive-webfont/css/elusive-webfont.css");
+
+body {
+  padding-top: 20px;
+  padding-bottom: 40px;
+  background-color: #ddd;
+}
+
+.map-viewport {
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-tile {
+  float: left;
+  width: 16px;
+  height: 16px;
+  background-color: #880000;
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000;
+  background-image: url(../images/tileset_terra.jpg?bust=123);
+  cursor: pointer;
+}
+
+.map-tile:hover:after {
+  content: " ";
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-left: -8px;
+  border-radius: 8px;
+}
