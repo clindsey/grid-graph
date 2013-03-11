@@ -2,15 +2,12 @@ define [
       "models/Heightmap"
       "Backbone"
     ], (
-      heightmap) ->
+      heightmapModel) ->
 
   ViewportTile = Backbone.View.extend
     tagName: "div"
 
     className: "map-tile"
-
-    events:
-      "click": "onClick"
 
     render: ->
       @calculateBackgroundPosition()
@@ -26,55 +23,43 @@ define [
 
       @render()
 
-    onClick: ->
-      roadType = @model.get "roadType"
-      tileType = @model.get "type"
-
-      if roadType is 1 or tileType is 255
-        if roadType is 1
-          @model.set "roadType", 0
-        else
-          @model.set "roadType", 1
-
-        x = @model.get "x"
-        y = @model.get "y"
-
-        heightmap.get("data")[@clampY y - 1][x].trigger "neighborRoadChanged"
-        heightmap.get("data")[y][@clampX x + 1].trigger "neighborRoadChanged"
-        heightmap.get("data")[@clampY y + 1][x].trigger "neighborRoadChanged"
-        heightmap.get("data")[y][@clampX x - 1].trigger "neighborRoadChanged"
-
     clampX: (x) ->
-      width = heightmap.get("worldTileWidth")
+      width = heightmapModel.get "worldTileWidth"
 
       (x + width) % width
 
     clampY: (y) ->
-      height = heightmap.get("worldTileHeight")
+      height = heightmapModel.get "worldTileHeight"
 
       (y + height) % height
 
     calculateBackgroundPosition: ->
       type = @model.get "type"
       roadType = @model.get "roadType"
+      buildingType = @model.get "buildingType"
 
-      if roadType is 0
-        @backgroundPositionX = 0 - ((type % 16) * 16)
-        @backgroundPositionY = 0 - (~~(type / 16) * 16)
-      else
+      unless roadType is 0
         roadTileType = @calculateRoadTile()
 
         @backgroundPositionX = 0 - roadTileType * 16
         @backgroundPositionY = 0 - 256
+      else unless buildingType is 0
+        @backgroundPositionX = 0 - (buildingType - 1) * 16
+        @backgroundPositionY = 0 - 272
+      else
+        @backgroundPositionX = 0 - ((type % 16) * 16)
+        @backgroundPositionY = 0 - (~~(type / 16) * 16)
 
     calculateRoadTile: ->
       x = @model.get "x"
       y = @model.get "y"
 
-      n = heightmap.get("data")[@clampY y - 1][x].get "roadType"
-      e = heightmap.get("data")[y][@clampX x + 1].get "roadType"
-      s = heightmap.get("data")[@clampY y + 1][x].get "roadType"
-      w = heightmap.get("data")[y][@clampX x - 1].get "roadType"
+      heightmapData = heightmapModel.get "data"
+
+      n = heightmapData[@clampY y - 1][x].get "isOccupied"
+      e = heightmapData[y][@clampX x + 1].get "isOccupied"
+      s = heightmapData[@clampY y + 1][x].get "isOccupied"
+      w = heightmapData[y][@clampX x - 1].get "isOccupied"
 
       a = n << n * 4 - 4
       b = e << e * 4 - 3
@@ -84,9 +69,9 @@ define [
       t = a + b + c + d
 
     setListeners: ->
-      @listenTo @model, "change:roadType", @render
+      @listenTo @model, "change:isOccupied", @render
 
-      @listenTo @model, "neighborRoadChanged", @render
+      @listenTo @model, "neighborChanged", @render
 
     setBackgroundPosition: ->
       @$el.css

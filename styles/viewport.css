@@ -1,0 +1,30 @@
+.map-viewport {
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  height: 336px;
+  width: 336px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.map-tile {
+  float: left;
+  width: 16px;
+  height: 16px;
+  background-color: #880000;
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000;
+  background-image: url(../images/tileset_terra.jpg?bust=123);
+  cursor: pointer;
+}
+
+.map-tile:hover:after {
+  content: " ";
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-left: -8px;
+  border-radius: 4px;
+}

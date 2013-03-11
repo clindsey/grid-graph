@@ -7,8 +7,8 @@
       defaults: {
         x: 0,
         y: 0,
-        width: 20,
-        height: 20
+        width: 21,
+        height: 21
       },
       initialize: function() {
         this.listenTo(this, "change:x", this.updateTiles);
