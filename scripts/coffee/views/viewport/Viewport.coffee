@@ -3,13 +3,19 @@ define [
       "views/viewport/ViewportTile"
       "models/Viewport"
       "models/Heightmap"
+      "collections/Creatures"
+      "models/Creature"
+      "views/entities/Creature"
       "Alea"
       "Backbone"
     ], (
       viewportTiles,
       ViewportTileView,
       viewportModel,
-      heightmapModel) ->
+      heightmapModel,
+      creatures,
+      CreatureModel,
+      CreatureView) ->
 
   ViewportView = Backbone.View.extend
     el: ".map-viewport"
@@ -68,6 +74,11 @@ define [
           if tileModel.get "isOccupied"
             tileModel.removeOccupant()
 
+            creature = tileModel.get "creature"
+
+            if creature?
+              creatures.remove creature
+
             @informNeighbors tileModel
 
     moveViewport: (jqEvent) ->
@@ -95,6 +106,18 @@ define [
       tileModel.set "buildingType", 1
 
       @informNeighbors tileModel
+
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      creature = new CreatureModel x: x, y: y
+      creatureView = new CreatureView model: creature
+
+      tileModel.set "creature", creature
+
+      creatures.add creature
+
+      @$el.append creatureView.render().$el
 
     putFarm: (tileModel) ->
       tileModel.set "buildingType", 3
