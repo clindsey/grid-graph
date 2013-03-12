@@ -9,9 +9,6 @@ define [
     className: "creature-tile creature-moving entity-tile"
 
     initialize: ->
+      EntityView.prototype.initialize.call this
+
       @listenTo @model, "remove", @remove
-
-    render: ->
-      EntityView.prototype.render.call this
-
-      @

@@ -96,8 +96,8 @@
         creatureView = new CreatureView({
           model: creature
         });
-        tileModel.set("creature", creature);
         creatures.add(creature);
+        tileModel.set("creature", creature);
         return this.$el.append(creatureView.render().$el);
       },
       putFarm: function(tileModel) {

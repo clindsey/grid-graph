@@ -113,9 +113,9 @@ define [
       creature = new CreatureModel x: x, y: y
       creatureView = new CreatureView model: creature
 
-      tileModel.set "creature", creature
-
       creatures.add creature
+
+      tileModel.set "creature", creature
 
       @$el.append creatureView.render().$el
 
