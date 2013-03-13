@@ -47,6 +47,11 @@ define [
 
         @grid.push viewportTileView
 
+      interval = (time, cb) -> setInterval cb, time
+
+      interval 1000 / 1, =>
+        creatures.invoke "trigger", "tick"
+
       @
 
     onClick: (jqEvent) ->

@@ -14,7 +14,8 @@
         return this.listenTo(viewportModel, "moved", this.onViewportMoved);
       },
       render: function() {
-        var _this = this;
+        var interval,
+          _this = this;
         this.$el.css({
           width: viewportModel.get("width") * 16,
           height: viewportModel.get("height") * 16
@@ -29,6 +30,12 @@
             return _this.onMapTileClick(viewportTileView);
           });
           return _this.grid.push(viewportTileView);
+        });
+        interval = function(time, cb) {
+          return setInterval(cb, time);
+        };
+        interval(1000 / 1, function() {
+          return creatures.invoke("trigger", "tick");
         });
         return this;
       },
