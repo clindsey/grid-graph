@@ -9,7 +9,8 @@
       initialize: function() {
         this.listenTo(viewportModel, "moved", this.onViewportMoved);
         this.listenTo(this.model, "change:x", this.onMove);
-        return this.listenTo(this.model, "change:y", this.onMove);
+        this.listenTo(this.model, "change:y", this.onMove);
+        return this.listenTo(this.model, "remove", this.remove);
       },
       render: function() {
         this.setPosition();

@@ -6,7 +6,6 @@ define [
       "collections/Creatures"
       "models/Creature"
       "views/entities/Creature"
-      "Alea"
       "Backbone"
     ], (
       viewportTiles,
@@ -26,8 +25,6 @@ define [
     initialize: ->
       _.bindAll @, "onMapTileClick"
 
-      @rnd = new Alea heightmapModel.get "SEED"
-
       @render()
 
       @listenTo viewportModel, "moved", @onViewportMoved
@@ -39,9 +36,9 @@ define [
 
       @grid = []
 
-      viewportTiles.each (viewportTileModel) =>
+      viewportTiles.each (mapTileModel) =>
         viewportTileView = new ViewportTileView
-        viewportTileView.setModel viewportTileModel
+        viewportTileView.setModel mapTileModel
 
         @$el.append viewportTileView.render().$el
 
@@ -76,8 +73,7 @@ define [
 
             creature = tileModel.get "creature"
 
-            if creature?
-              creatures.remove creature
+            creatures.remove creature if creature?
 
             @informNeighbors tileModel
 
@@ -88,8 +84,8 @@ define [
       tileX = ~~(jqEvent.target.offsetLeft / 16)
       tileY = ~~(jqEvent.target.offsetTop / 16)
 
-      vx = tileX - Math.floor(viewportWidth / 2)
-      vy = tileY - Math.floor(viewportHeight / 2)
+      vx = tileX - ~~(viewportWidth / 2)
+      vy = tileY - ~~(viewportHeight / 2)
 
       viewportX = viewportModel.get "x"
       viewportY = viewportModel.get "y"
@@ -143,19 +139,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      heightmapData = heightmapModel.get "data"
+      neighboringTiles = heightmapModel.getNeighboringTiles x, y
 
-      heightmapData[@clampY y - 1][x].trigger "neighborChanged"
-      heightmapData[y][@clampX x + 1].trigger "neighborChanged"
-      heightmapData[@clampY y + 1][x].trigger "neighborChanged"
-      heightmapData[y][@clampX x - 1].trigger "neighborChanged"
-
-    clampX: (x) ->
-      width = heightmapModel.get("worldTileWidth")
-
-      (x + width) % width
-
-    clampY: (y) ->
-      height = heightmapModel.get("worldTileHeight")
-
-      (y + height) % height
+      _.each neighboringTiles, (neighboringTile) ->
+        neighboringTile.trigger "neighborChanged"

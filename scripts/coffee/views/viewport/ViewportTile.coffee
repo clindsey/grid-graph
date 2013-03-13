@@ -23,16 +23,6 @@ define [
 
       @render()
 
-    clampX: (x) ->
-      width = heightmapModel.get "worldTileWidth"
-
-      (x + width) % width
-
-    clampY: (y) ->
-      height = heightmapModel.get "worldTileHeight"
-
-      (y + height) % height
-
     calculateBackgroundPosition: ->
       type = @model.get "type"
       roadType = @model.get "roadType"
@@ -54,12 +44,12 @@ define [
       x = @model.get "x"
       y = @model.get "y"
 
-      heightmapData = heightmapModel.get "data"
+      neighboringTiles = heightmapModel.getNeighboringTiles x, y
 
-      n = heightmapData[@clampY y - 1][x].get "isOccupied"
-      e = heightmapData[y][@clampX x + 1].get "isOccupied"
-      s = heightmapData[@clampY y + 1][x].get "isOccupied"
-      w = heightmapData[y][@clampX x - 1].get "isOccupied"
+      n = neighboringTiles.n.get "isOccupied"
+      e = neighboringTiles.e.get "isOccupied"
+      s = neighboringTiles.s.get "isOccupied"
+      w = neighboringTiles.w.get "isOccupied"
 
       a = n << n * 4 - 4
       b = e << e * 4 - 3

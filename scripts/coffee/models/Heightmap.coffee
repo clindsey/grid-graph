@@ -1,17 +1,16 @@
 define [
       "models/HeightmapChunk"
-      "models/ViewportTile"
+      "models/MapTile"
       "Alea"
       "Backbone"
     ], (
       HeightmapChunkModel,
-      ViewportTileModel) ->
+      MapTileModel) ->
 
   Heightmap = Backbone.Model.extend
-    defaults:
-      SEED: (new Date()).getTime()
-
     initialize: ->
+      @set "SEED", (new Date()).getTime()
+
       worldChunkWidth = 8
       worldChunkHeight = 8
       chunkWidth = 9
@@ -61,17 +60,37 @@ define [
             h = nw << nw * 8 - 5
             s = a + b + c + d + e + f + g + h
 
-          viewportTileModel = new ViewportTileModel(
+          mapTileModel = new MapTileModel(
               type: s
               x: x
               y: y)
 
-          data[y][x] = viewportTileModel
+          data[y][x] = mapTileModel
 
       data
 
     clamp: (index, size) ->
       (index + size) % size
+
+    clampX: (x) ->
+      width = @get "worldTileWidth"
+
+      (x + width) % width
+
+    clampY: (y) ->
+      height = @get "worldTileHeight"
+
+      (y + height) % height
+
+    getNeighboringTiles: (x, y) ->
+      heightmapData = @get "data"
+
+      {
+        n: heightmapData[@clampY y - 1][x]
+        e: heightmapData[y][@clampX x + 1]
+        s: heightmapData[@clampY y + 1][x]
+        w: heightmapData[y][@clampX x - 1]
+      }
 
     generateHeightmap: (chunks, worldTileWidth, worldTileHeight, chunkWidth, chunkHeight, maxElevation) ->
       heightmap = []

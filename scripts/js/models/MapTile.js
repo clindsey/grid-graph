@@ -2,8 +2,8 @@
 (function() {
 
   define(["Backbone"], function() {
-    var ViewportTile;
-    return ViewportTile = Backbone.Model.extend({
+    var MapTile;
+    return MapTile = Backbone.Model.extend({
       defaults: {
         type: 0,
         isOccupied: false,

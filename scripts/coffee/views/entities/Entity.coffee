@@ -17,6 +17,8 @@ define [
       @listenTo @model, "change:x", @onMove
       @listenTo @model, "change:y", @onMove
 
+      @listenTo @model, "remove", @remove
+
     render: ->
       @setPosition()
 

@@ -4,11 +4,7 @@
   define(["views/entities/Entity", "models/Heightmap"], function(EntityView, heightmapModel) {
     var Creature;
     return Creature = EntityView.extend({
-      className: "creature-tile creature-moving entity-tile",
-      initialize: function() {
-        EntityView.prototype.initialize.call(this);
-        return this.listenTo(this.model, "remove", this.remove);
-      }
+      className: "creature-tile creature-moving entity-tile"
     });
   });
 

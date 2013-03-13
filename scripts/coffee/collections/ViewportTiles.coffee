@@ -1,12 +1,10 @@
 define [
-      "models/ViewportTile"
+      "models/MapTile"
       "Backbone"
     ], (
-      ViewportTileModel) ->
+      MapTileModel) ->
 
   ViewportTiles = Backbone.Collection.extend
-    model: ViewportTileModel
-
-    initialize: ->
+    model: MapTileModel
 
   new ViewportTiles

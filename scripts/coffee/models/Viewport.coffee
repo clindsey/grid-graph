@@ -3,7 +3,7 @@ define [
       "collections/ViewportTiles"
       "Backbone"
     ], (
-      heightmap,
+      heightmapModel,
       viewportTiles) ->
 
   Viewport = Backbone.Model.extend
@@ -19,20 +19,17 @@ define [
 
       @updateTiles()
 
-    clamp: (index, size) ->
-      (index + size) % size
-
     updateTiles: ->
-      viewportX = @get "x"
-      viewportY = @get "y"
+      viewportX = heightmapModel.clampX @get "x"
+      viewportY = heightmapModel.clampY @get "y"
 
       @set
-        x: @clamp @get("x"), heightmap.get("worldTileWidth")
-        y: @clamp @get("y"), heightmap.get("worldTileHeight")
+        x: viewportX
+        y: viewportY
 
       viewportTiles.remove viewportTiles.models
 
-      for tileRow in heightmap.getArea @get("width"), @get("height"), @get("x"), @get("y")
+      for tileRow in heightmapModel.getArea @get("width"), @get("height"), viewportX, viewportY
         for tile in tileRow
           viewportTiles.add tile
 

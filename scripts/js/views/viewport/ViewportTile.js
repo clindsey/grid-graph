@@ -16,16 +16,6 @@
         this.setListeners();
         return this.render();
       },
-      clampX: function(x) {
-        var width;
-        width = heightmapModel.get("worldTileWidth");
-        return (x + width) % width;
-      },
-      clampY: function(y) {
-        var height;
-        height = heightmapModel.get("worldTileHeight");
-        return (y + height) % height;
-      },
       calculateBackgroundPosition: function() {
         var buildingType, roadTileType, roadType, type;
         type = this.model.get("type");
@@ -44,14 +34,14 @@
         }
       },
       calculateRoadTile: function() {
-        var a, b, c, d, e, heightmapData, n, s, t, w, x, y;
+        var a, b, c, d, e, n, neighboringTiles, s, t, w, x, y;
         x = this.model.get("x");
         y = this.model.get("y");
-        heightmapData = heightmapModel.get("data");
-        n = heightmapData[this.clampY(y - 1)][x].get("isOccupied");
-        e = heightmapData[y][this.clampX(x + 1)].get("isOccupied");
-        s = heightmapData[this.clampY(y + 1)][x].get("isOccupied");
-        w = heightmapData[y][this.clampX(x - 1)].get("isOccupied");
+        neighboringTiles = heightmapModel.getNeighboringTiles(x, y);
+        n = neighboringTiles.n.get("isOccupied");
+        e = neighboringTiles.e.get("isOccupied");
+        s = neighboringTiles.s.get("isOccupied");
+        w = neighboringTiles.w.get("isOccupied");
         a = n << n * 4 - 4;
         b = e << e * 4 - 3;
         c = s << s * 4 - 2;

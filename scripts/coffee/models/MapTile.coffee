@@ -3,7 +3,7 @@ define [
     ], (
       ) ->
 
-  ViewportTile = Backbone.Model.extend
+  MapTile = Backbone.Model.extend
     defaults:
       type: 0
       isOccupied: false
