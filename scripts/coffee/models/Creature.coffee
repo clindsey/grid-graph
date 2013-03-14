@@ -39,31 +39,21 @@ define [
 
         heightmapData = heightmapModel.get "data"
 
-        if heightmapData[my][mx].get("roadType") is 1
+        if heightmapData[my][mx].get("isOccupied") is true
           return [vx, vy]
 
       []
 
     behaviorTree:
-      identifier: "idle"
+      identifier: "sleep"
       strategy: "prioritised"
       children: [
         { identifier: "walk" }
-        {
-          identifier: "sleep"
-          strategy: "sequential"
-          children: [
-            { identifier: "walk" }
-            { identifier: "idle" }
-          ]
-        }
       ]
 
     states:
-      idle: ->
-      canIdle: ->
-
       sleep: ->
+
       canSleep: ->
         !@nearbyRoads().length
 

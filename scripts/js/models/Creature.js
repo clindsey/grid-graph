@@ -25,34 +25,22 @@
           mx = heightmapModel.clampX(this.get("x") + vx);
           my = heightmapModel.clampY(this.get("y") + vy);
           heightmapData = heightmapModel.get("data");
-          if (heightmapData[my][mx].get("roadType") === 1) {
+          if (heightmapData[my][mx].get("isOccupied") === true) {
             return [vx, vy];
           }
         }
         return [];
       },
       behaviorTree: {
-        identifier: "idle",
+        identifier: "sleep",
         strategy: "prioritised",
         children: [
           {
             identifier: "walk"
-          }, {
-            identifier: "sleep",
-            strategy: "sequential",
-            children: [
-              {
-                identifier: "walk"
-              }, {
-                identifier: "idle"
-              }
-            ]
           }
         ]
       },
       states: {
-        idle: function() {},
-        canIdle: function() {},
         sleep: function() {},
         canSleep: function() {
           return !this.nearbyRoads().length;
