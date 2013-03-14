@@ -16,7 +16,6 @@
       onStateChange: function() {
         this.removeClassName();
         this.currentState = this.model.get("state").identifier;
-        console.log(this.currentState);
         return this.setClassName();
       },
       onDirectionChange: function() {

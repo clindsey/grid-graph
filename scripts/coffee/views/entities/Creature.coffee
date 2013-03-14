@@ -24,8 +24,6 @@ define [
 
       @currentState = @model.get("state").identifier
 
-      console.log @currentState
-
       @setClassName()
 
     onDirectionChange: ->
