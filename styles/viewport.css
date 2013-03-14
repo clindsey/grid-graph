@@ -1,3 +1,5 @@
+@import url("creature.css");
+
 .map-viewport {
   margin: 0 auto;
   position: relative;
@@ -11,7 +13,6 @@
   float: left;
   width: 16px;
   height: 16px;
-  background-color: #880000;
   color: #fff;
   text-align: center;
   text-shadow: 1px 1px 0 #000;
@@ -35,89 +36,4 @@
   height: 16px;
   background-position: 0 0;
   background-image: url(../images/tileset_terra.png?bust=123);
-}
-
-.creature-tile {
-  -webkit-animation: walkSouth 1s steps(4) infinite;
-  pointer-events: none;
-}
-
-@-webkit-keyframes walkEast {
-  from { background-position: 0 -288px; }
-  to { background-position: -64px -288px; }
-}
-
-@-webkit-keyframes walkNorth {
-  from { background-position: -64px -288px; }
-  to { background-position: -128px -288px; }
-}
-
-@-webkit-keyframes walkWest {
-  from { background-position: -128px -288px; }
-  to { background-position: -192px -288px; }
-}
-
-@-webkit-keyframes walkSouth {
-  from { background-position: -192px -288px; }
-  to { background-position: -256px -288px; }
-}
-
-@-webkit-keyframes carryEast {
-  from { background-position: 0 -304px; }
-  to { background-position: -64px -304px; }
-}
-
-@-webkit-keyframes carryNorth {
-  from { background-position: -64px -304px; }
-  to { background-position: -128px -304px; }
-}
-
-@-webkit-keyframes carryWest {
-  from { background-position: -128px -304px; }
-  to { background-position: -192px -304px; }
-}
-
-@-webkit-keyframes carrySouth {
-  from { background-position: -192px -304px; }
-  to { background-position: -256px -304px; }
-}
-
-@-webkit-keyframes sleepEast {
-  from { background-position: 0 -320px; }
-  to { background-position: -32px -320px; }
-}
-
-@-webkit-keyframes sleepNorth {
-  from { background-position: -32px -320px; }
-  to { background-position: -64px -320px; }
-}
-
-@-webkit-keyframes sleepWest {
-  from { background-position: -64px -320px; }
-  to { background-position: -96px -320px; }
-}
-
-@-webkit-keyframes sleepSouth {
-  from { background-position: -96px -320px; }
-  to { background-position: -128px -320px; }
-}
-
-@-webkit-keyframes waterEast {
-  from { background-position: -128px -320px; }
-  to { background-position: -160px -320px; }
-}
-
-@-webkit-keyframes waterNorth {
-  from { background-position: -160px -320px; }
-  to { background-position: -192px -320px; }
-}
-
-@-webkit-keyframes waterWest {
-  from { background-position: -192px -320px; }
-  to { background-position: -224px -320px; }
-}
-
-@-webkit-keyframes waterSouth {
-  from { background-position: -224px -320px; }
-  to { background-position: -256px -320px; }
 }
