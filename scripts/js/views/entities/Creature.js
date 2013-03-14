@@ -4,7 +4,31 @@
   define(["views/entities/Entity", "models/Heightmap"], function(EntityView, heightmapModel) {
     var Creature;
     return Creature = EntityView.extend({
-      className: "creature-tile creature-moving entity-tile"
+      className: "creature-tile creature-moving entity-tile",
+      initialize: function() {
+        EntityView.prototype.initialize.call(this);
+        this.listenTo(this.model, "change:state", this.onStateChange);
+        this.listenTo(this.model, "change:direction", this.onDirectionChange);
+        this.currentState = this.model.get("state").identifer;
+        this.currentDirection = this.model.get("direction");
+        return this.setClassName;
+      },
+      onStateChange: function() {
+        this.removeClassName();
+        this.currentState = this.model.get("state").identifier;
+        return this.setClassName();
+      },
+      onDirectionChange: function() {
+        this.removeClassName();
+        this.currentDirection = this.model.get("direction");
+        return this.setClassName();
+      },
+      removeClassName: function() {
+        return this.$el.removeClass("" + this.currentState + "-" + this.currentDirection);
+      },
+      setClassName: function() {
+        return this.$el.addClass("" + this.currentState + "-" + this.currentDirection);
+      }
     });
   });
 

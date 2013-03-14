@@ -42,6 +42,38 @@
   pointer-events: none;
 }
 
+.walk-east {
+  -webkit-animation: walkEast 1s steps(4) infinite;
+}
+
+.walk-west {
+  -webkit-animation: walkWest 1s steps(4) infinite;
+}
+
+.walk-north {
+  -webkit-animation: walkNorth 1s steps(4) infinite;
+}
+
+.walk-south {
+  -webkit-animation: walkSouth 1s steps(4) infinite;
+}
+
+.sleep-east {
+  -webkit-animation: sleepEast 1s steps(2) infinite;
+}
+
+.sleep-west {
+  -webkit-animation: sleepWest 1s steps(2) infinite;
+}
+
+.sleep-north {
+  -webkit-animation: sleepNorth 1s steps(2) infinite;
+}
+
+.sleep-south {
+  -webkit-animation: sleepSouth 1s steps(2) infinite;
+}
+
 @-webkit-keyframes walkEast {
   from { background-position: 0 -288px; }
   to { background-position: -64px -288px; }

@@ -8,48 +8,82 @@
         var machine,
           _this = this;
         machine = new Machine;
+        this.set("direction", "south");
         this.set("state", machine.generateTree(this.behaviorTree, this, this.states));
         return this.listenTo(this, "tick", function() {
           return _this.set("state", _this.get("state").tick());
         });
+      },
+      nearbyRoads: function() {
+        var dir, dirCombos, heightmapData, mx, my, vx, vy;
+        dirCombos = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        dirCombos = _.shuffle(dirCombos);
+        while (dirCombos.length) {
+          dir = dirCombos.pop();
+          vx = dir[0];
+          vy = dir[1];
+          mx = heightmapModel.clampX(this.get("x") + vx);
+          my = heightmapModel.clampY(this.get("y") + vy);
+          heightmapData = heightmapModel.get("data");
+          if (heightmapData[my][mx].get("roadType") === 1) {
+            return [vx, vy];
+          }
+        }
+        return [];
       },
       behaviorTree: {
         identifier: "idle",
         strategy: "prioritised",
         children: [
           {
-            identifier: "followPath"
+            identifier: "walk"
+          }, {
+            identifier: "sleep",
+            strategy: "sequential",
+            children: [
+              {
+                identifier: "walk"
+              }, {
+                identifier: "idle"
+              }
+            ]
           }
         ]
       },
       states: {
         idle: function() {},
-        followPath: function() {
-          var dir, dirCombos, heightmapData, mx, my, vx, vy, _results;
-          dirCombos = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-          dirCombos = _.shuffle(dirCombos);
-          _results = [];
-          while (dirCombos.length) {
-            dir = dirCombos.pop();
-            vx = dir[0];
-            vy = dir[1];
-            mx = heightmapModel.clampX(this.get("x") + vx);
-            my = heightmapModel.clampY(this.get("y") + vy);
-            heightmapData = heightmapModel.get("data");
-            if (heightmapData[my][mx].get("roadType") === 1) {
-              this.set({
-                "x": mx,
-                "y": my
-              });
-              break;
-            } else {
-              _results.push(void 0);
-            }
-          }
-          return _results;
+        canIdle: function() {},
+        sleep: function() {},
+        canSleep: function() {
+          return !this.nearbyRoads().length;
         },
-        canFollowPath: function() {
-          return true;
+        walk: function() {
+          var direction, nearRoad;
+          nearRoad = this.nearbyRoads();
+          if (!nearRoad.length) {
+            return;
+          }
+          this.set({
+            "x": this.get("x") + nearRoad[0],
+            "y": this.get("y") + nearRoad[1]
+          });
+          direction = "south";
+          if (nearRoad[0] === 1) {
+            direction = "east";
+          }
+          if (nearRoad[0] === -1) {
+            direction = "west";
+          }
+          if (nearRoad[1] === 1) {
+            direction = "south";
+          }
+          if (nearRoad[1] === -1) {
+            direction = "north";
+          }
+          return this.set("direction", direction);
+        },
+        canWalk: function() {
+          return !!this.nearbyRoads().length;
         }
       }
     });
