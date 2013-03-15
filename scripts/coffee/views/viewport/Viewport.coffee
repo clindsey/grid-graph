@@ -6,6 +6,7 @@ define [
       "collections/Creatures"
       "models/Creature"
       "views/entities/Creature"
+      "AStar"
       "Backbone"
     ], (
       viewportTiles,
@@ -14,7 +15,8 @@ define [
       heightmapModel,
       creatures,
       CreatureModel,
-      CreatureView) ->
+      CreatureView,
+      AStar) ->
 
   ViewportView = Backbone.View.extend
     el: ".map-viewport"
@@ -61,6 +63,11 @@ define [
     onMapTileClick: (viewportTileView) ->
       tileModel = viewportTileView.model
 
+      context = @options.toolbarView.activeContext
+
+      if tileModel.get("isOccupied") is true and context isnt "remove"
+        return
+
       switch @options.toolbarView.activeContext
         when "move"
           ""
@@ -72,6 +79,7 @@ define [
           @putFarm tileModel
         when "refinery"
           @putRefinery tileModel
+          @sendFirstWorker tileModel # remove this, exists just for testing
         when "remove"
           if tileModel.get "isOccupied"
             tileModel.removeOccupant()
@@ -148,3 +156,41 @@ define [
 
       _.each neighboringTiles, (neighboringTile) ->
         neighboringTile.trigger "neighborChanged"
+
+    sendFirstWorker: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      worldTileWidth = heightmapModel.get "worldTileWidth"
+      worldTileHeight = heightmapModel.get "worldTileHeight"
+
+      grid = heightmapModel.getPathfindingGrid worldTileWidth, worldTileHeight, x, y
+
+      unemployedCreature = creatures.first()
+
+      worldHalfWidth = Math.ceil worldTileWidth / 2
+      worldHalfHeight = Math.ceil worldTileHeight / 2
+
+      deltaX = x - worldHalfWidth
+      deltaY = y - worldHalfHeight
+
+      targetX = heightmapModel.clampX unemployedCreature.get("x") - deltaX
+      targetY = heightmapModel.clampY unemployedCreature.get("y") - deltaY
+
+      start = [targetX, targetY]
+      end = [worldHalfWidth, worldHalfHeight]
+
+      path = AStar grid, start, end
+
+      pathOut = []
+
+      for pathStep, index in path
+        if index is 0
+          continue
+        else
+          lastStep = path[index - 1]
+          pathOut.push [pathStep[0] - lastStep[0], pathStep[1] - lastStep[1]]
+
+      pathOut.push [0, 0]
+
+      unemployedCreature.set "path", pathOut

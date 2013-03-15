@@ -7,7 +7,7 @@ require.config
     Alea: "../../vendor/alea/alea"
     Base: "../../vendor/base/base"
     Machine: "../../vendor/machine/machine"
-    astar: "../../vendor/astar/astar"
+    AStar: "../../vendor/astar/astar"
 
   shim:
     underscore:

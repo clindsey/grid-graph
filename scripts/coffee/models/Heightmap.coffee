@@ -9,7 +9,7 @@ define [
 
   Heightmap = Backbone.Model.extend
     initialize: ->
-      @set "SEED", (new Date()).getTime()
+      @set "SEED", +new Date
 
       worldChunkWidth = 8
       worldChunkHeight = 8
@@ -177,6 +177,19 @@ define [
           yIndex = @clamp y - yOffset + centerY, dataHeight
 
           dataOut[y][x] = heightmapData[yIndex][xIndex]
+
+      dataOut
+
+    getPathfindingGrid: (sliceWidth, sliceHeight, centerX, centerY) ->
+      tileGrid = @getArea sliceWidth, sliceHeight, centerX, centerY
+
+      dataOut = []
+
+      for tileGridRow, y in tileGrid
+        dataOut[y] = []
+
+        for tileGridItem, x in tileGridRow
+          dataOut[y][x] = +!(tileGridItem.get "isOccupied")
 
       dataOut
 

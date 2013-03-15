@@ -8,6 +8,9 @@ define [
       heightmapModel) ->
 
   Creature = EntityModel.extend
+    defaults:
+      path: []
+
     initialize: ->
       machine = new Machine
 
@@ -17,32 +20,6 @@ define [
 
       @listenTo @, "tick", =>
         @set "state", @get("state").tick()
-
-    nearbyRoads: ->
-      dirCombos = [
-        [1, 0]
-        [-1, 0]
-        [0, 1]
-        [0, -1]
-      ]
-
-      dirCombos = _.shuffle dirCombos
-
-      while dirCombos.length
-        dir = dirCombos.pop()
-
-        vx = dir[0]
-        vy = dir[1]
-
-        mx = heightmapModel.clampX @get("x") + vx
-        my = heightmapModel.clampY @get("y") + vy
-
-        heightmapData = heightmapModel.get "data"
-
-        if heightmapData[my][mx].get("isOccupied") is true
-          return [vx, vy]
-
-      []
 
     behaviorTree:
       identifier: "sleep"
@@ -55,10 +32,14 @@ define [
       sleep: ->
 
       canSleep: ->
-        !@nearbyRoads().length
+        !@get("path").length
 
       walk: ->
-        nearRoad = @nearbyRoads()
+        path = @get "path"
+
+        nearRoad = path.shift()
+
+        @set "path", path
 
         return unless !!nearRoad.length
 
@@ -80,4 +61,4 @@ define [
         @set "direction", direction
 
       canWalk: ->
-        !!@nearbyRoads().length
+        !!@get("path").length

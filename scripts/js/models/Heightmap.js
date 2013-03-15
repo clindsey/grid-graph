@@ -6,7 +6,7 @@
     Heightmap = Backbone.Model.extend({
       initialize: function() {
         var chunkHeight, chunkWidth, chunks, heightmap, maxElevation, worldChunkHeight, worldChunkWidth;
-        this.set("SEED", (new Date()).getTime());
+        this.set("SEED", +(new Date));
         worldChunkWidth = 8;
         worldChunkHeight = 8;
         chunkWidth = 9;
@@ -178,6 +178,20 @@
             xIndex = this.clamp(x - xOffset + centerX, dataWidth);
             yIndex = this.clamp(y - yOffset + centerY, dataHeight);
             dataOut[y][x] = heightmapData[yIndex][xIndex];
+          }
+        }
+        return dataOut;
+      },
+      getPathfindingGrid: function(sliceWidth, sliceHeight, centerX, centerY) {
+        var dataOut, tileGrid, tileGridItem, tileGridRow, x, y, _i, _j, _len, _len1;
+        tileGrid = this.getArea(sliceWidth, sliceHeight, centerX, centerY);
+        dataOut = [];
+        for (y = _i = 0, _len = tileGrid.length; _i < _len; y = ++_i) {
+          tileGridRow = tileGrid[y];
+          dataOut[y] = [];
+          for (x = _j = 0, _len1 = tileGridRow.length; _j < _len1; x = ++_j) {
+            tileGridItem = tileGridRow[x];
+            dataOut[y][x] = +(!(tileGridItem.get("isOccupied")));
           }
         }
         return dataOut;

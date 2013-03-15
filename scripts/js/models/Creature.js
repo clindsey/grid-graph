@@ -4,6 +4,9 @@
   define(["models/Entity", "models/Heightmap", "Machine", "Backbone"], function(EntityModel, heightmapModel) {
     var Creature;
     return Creature = EntityModel.extend({
+      defaults: {
+        path: []
+      },
       initialize: function() {
         var machine,
           _this = this;
@@ -13,23 +16,6 @@
         return this.listenTo(this, "tick", function() {
           return _this.set("state", _this.get("state").tick());
         });
-      },
-      nearbyRoads: function() {
-        var dir, dirCombos, heightmapData, mx, my, vx, vy;
-        dirCombos = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-        dirCombos = _.shuffle(dirCombos);
-        while (dirCombos.length) {
-          dir = dirCombos.pop();
-          vx = dir[0];
-          vy = dir[1];
-          mx = heightmapModel.clampX(this.get("x") + vx);
-          my = heightmapModel.clampY(this.get("y") + vy);
-          heightmapData = heightmapModel.get("data");
-          if (heightmapData[my][mx].get("isOccupied") === true) {
-            return [vx, vy];
-          }
-        }
-        return [];
       },
       behaviorTree: {
         identifier: "sleep",
@@ -43,11 +29,13 @@
       states: {
         sleep: function() {},
         canSleep: function() {
-          return !this.nearbyRoads().length;
+          return !this.get("path").length;
         },
         walk: function() {
-          var direction, nearRoad;
-          nearRoad = this.nearbyRoads();
+          var direction, nearRoad, path;
+          path = this.get("path");
+          nearRoad = path.shift();
+          this.set("path", path);
           if (!nearRoad.length) {
             return;
           }
@@ -71,7 +59,7 @@
           return this.set("direction", direction);
         },
         canWalk: function() {
-          return !!this.nearbyRoads().length;
+          return !!this.get("path").length;
         }
       }
     });
