@@ -51,6 +51,9 @@
         if (tileModel.get("isOccupied") === true && context !== "remove") {
           return;
         }
+        if (tileModel.get("type") !== 255) {
+          return;
+        }
         switch (this.options.toolbarView.activeContext) {
           case "move":
             return "";
@@ -120,14 +123,8 @@
         return this.informNeighbors(tileModel);
       },
       putRoad: function(tileModel) {
-        var occupied, roadType, tileType;
-        roadType = tileModel.get("roadType");
-        occupied = tileModel.get("isOccupied");
-        tileType = tileModel.get("type");
-        if (occupied === false && tileType === 255) {
-          tileModel.set("roadType", 1);
-          return this.informNeighbors(tileModel);
-        }
+        tileModel.set("roadType", 1);
+        return this.informNeighbors(tileModel);
       },
       informNeighbors: function(tileModel) {
         var neighboringTiles, x, y;

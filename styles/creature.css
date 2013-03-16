@@ -1,7 +1,6 @@
 .creature-tile {
   -webkit-animation: sleepSouth 1s steps(2) infinite;
   pointer-events: none;
-  -webkit-transition: top 1s linear, left 1s linear;
 }
 
 .walk-east {

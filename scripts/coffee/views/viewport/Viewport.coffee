@@ -68,6 +68,9 @@ define [
       if tileModel.get("isOccupied") is true and context isnt "remove"
         return
 
+      if tileModel.get("type") isnt 255
+        return
+
       switch @options.toolbarView.activeContext
         when "move"
           ""
@@ -139,14 +142,9 @@ define [
       @informNeighbors tileModel
 
     putRoad: (tileModel) ->
-      roadType = tileModel.get "roadType"
-      occupied = tileModel.get "isOccupied"
-      tileType = tileModel.get "type"
+      tileModel.set "roadType", 1
 
-      if occupied is false and tileType is 255
-        tileModel.set "roadType", 1
-
-        @informNeighbors tileModel
+      @informNeighbors tileModel
 
     informNeighbors: (tileModel) ->
       x = tileModel.get "x"

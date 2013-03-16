@@ -39,6 +39,7 @@
           if (!nearRoad.length) {
             return;
           }
+          this.trigger("step", nearRoad);
           this.set({
             "x": this.get("x") + nearRoad[0],
             "y": this.get("y") + nearRoad[1]

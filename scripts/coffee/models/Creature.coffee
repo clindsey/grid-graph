@@ -43,6 +43,8 @@ define [
 
         return unless !!nearRoad.length
 
+        @trigger "step", nearRoad
+
         @set
           "x": @get("x") + nearRoad[0]
           "y": @get("y") + nearRoad[1]
