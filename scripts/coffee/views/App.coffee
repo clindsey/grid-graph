@@ -2,12 +2,14 @@ define [
       "views/viewport/Viewport"
       "models/Viewport"
       "views/toolbar/Toolbar"
+      "models/Heightmap"
       "Alea"
       "Backbone"
     ], (
       ViewportView,
       viewportModel,
-      ToolbarView) ->
+      ToolbarView,
+      heightmapModel) ->
 
   AppView = Backbone.View.extend
     el: document
@@ -18,3 +20,5 @@ define [
 
       new ViewportView
         toolbarView: toolbarView
+
+      console.log "seed", heightmapModel.get "SEED"

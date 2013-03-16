@@ -35,6 +35,22 @@
   -webkit-animation: sleepSouth 1s steps(2) infinite;
 }
 
+.water-east {
+  -webkit-animation: waterEast 1s steps(2) infinite;
+}
+
+.water-west {
+  -webkit-animation: waterWest 1s steps(2) infinite;
+}
+
+.water-north {
+  -webkit-animation: waterNorth 1s steps(2) infinite;
+}
+
+.water-south {
+  -webkit-animation: waterSouth 1s steps(2) infinite;
+}
+
 @-webkit-keyframes walkEast {
   from { background-position: 0 -288px; }
   to { background-position: -64px -288px; }

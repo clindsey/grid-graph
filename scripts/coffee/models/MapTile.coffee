@@ -9,6 +9,7 @@ define [
       isOccupied: false
       roadType: 0
       buildingType: 0
+      worker: undefined
 
     initialize: ->
       @listenTo @, "change:roadType", @setOccupied

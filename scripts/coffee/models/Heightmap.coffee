@@ -1,11 +1,13 @@
 define [
       "models/HeightmapChunk"
       "models/MapTile"
+      "collections/MapTiles"
       "Alea"
       "Backbone"
     ], (
       HeightmapChunkModel,
-      MapTileModel) ->
+      MapTileModel,
+      mapTiles) ->
 
   Heightmap = Backbone.Model.extend
     initialize: ->
@@ -27,6 +29,7 @@ define [
 
     processTiles: (heightmap) ->
       data = []
+      newMapTiles = []
       xl = @get "worldTileWidth"
       yl = @get "worldTileHeight"
       cx = (x) => @clamp x, xl
@@ -66,6 +69,10 @@ define [
               y: y)
 
           data[y][x] = mapTileModel
+
+          newMapTiles.push mapTileModel
+
+      mapTiles.reset newMapTiles
 
       data
 

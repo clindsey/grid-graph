@@ -8,7 +8,8 @@
         type: 0,
         isOccupied: false,
         roadType: 0,
-        buildingType: 0
+        buildingType: 0,
+        worker: void 0
       },
       initialize: function() {
         this.listenTo(this, "change:roadType", this.setOccupied);
