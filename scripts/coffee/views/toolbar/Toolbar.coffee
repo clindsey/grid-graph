@@ -14,7 +14,6 @@ define [
       "click .road-btn": "onRoadBtnClick"
       "click .home-btn": "onHomeBtnClick"
       "click .farm-btn": "onFarmBtnClick"
-      "click .refinery-btn": "onRefineryBtnClick"
       "click .remove-btn": "onRemoveBtnClick"
 
     initialize: ->
@@ -36,9 +35,6 @@ define [
 
     onFarmBtnClick: ->
       @activeContext = "farm"
-
-    onRefineryBtnClick: ->
-      @activeContext = "refinery"
 
     onRemoveBtnClick: ->
       @activeContext = "remove"

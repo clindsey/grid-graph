@@ -1,6 +1,6 @@
 define [
-      "models/Entity"
-      "models/Heightmap"
+      "models/entities/Entity"
+      "models/heightmap/Heightmap"
       "AStar"
       "Machine"
       "Backbone"

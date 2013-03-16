@@ -2,7 +2,7 @@ define [
       "views/viewport/Viewport"
       "models/Viewport"
       "views/toolbar/Toolbar"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "Alea"
       "Backbone"
     ], (

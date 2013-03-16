@@ -12,7 +12,6 @@
         "click .road-btn": "onRoadBtnClick",
         "click .home-btn": "onHomeBtnClick",
         "click .farm-btn": "onFarmBtnClick",
-        "click .refinery-btn": "onRefineryBtnClick",
         "click .remove-btn": "onRemoveBtnClick"
       },
       initialize: function() {
@@ -33,9 +32,6 @@
       },
       onFarmBtnClick: function() {
         return this.activeContext = "farm";
-      },
-      onRefineryBtnClick: function() {
-        return this.activeContext = "refinery";
       },
       onRemoveBtnClick: function() {
         return this.activeContext = "remove";

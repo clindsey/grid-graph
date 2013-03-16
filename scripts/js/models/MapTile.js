@@ -7,25 +7,19 @@
       defaults: {
         type: 0,
         isOccupied: false,
-        roadType: 0,
-        buildingType: 0,
-        worker: void 0
+        buildingView: void 0
       },
       initialize: function() {
-        this.listenTo(this, "change:roadType", this.setOccupied);
-        return this.listenTo(this, "change:buildingType", this.setOccupied);
+        return this.listenTo(this, "change:buildingView", this.setOccupied);
       },
       setOccupied: function() {
-        if (this.roadType === 0 && this.buildingType === 0) {
-          return this.set("isOccupied", false);
-        } else {
+        var buildingType;
+        buildingType = this.get("buildingView");
+        if (buildingType != null) {
           return this.set("isOccupied", true);
+        } else {
+          return this.set("isOccupied", false);
         }
-      },
-      removeOccupant: function() {
-        this.set("roadType", 0);
-        this.set("buildingType", 0);
-        return this.set("isOccupied", false);
       }
     });
   });

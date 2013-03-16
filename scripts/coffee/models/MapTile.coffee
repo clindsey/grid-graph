@@ -7,21 +7,15 @@ define [
     defaults:
       type: 0
       isOccupied: false
-      roadType: 0
-      buildingType: 0
-      worker: undefined
+      buildingView: undefined
 
     initialize: ->
-      @listenTo @, "change:roadType", @setOccupied
-      @listenTo @, "change:buildingType", @setOccupied
+      @listenTo @, "change:buildingView", @setOccupied
 
     setOccupied: ->
-      if @roadType is 0 and @buildingType is 0
-        @set "isOccupied", false
-      else
-        @set "isOccupied", true
+      buildingType = @get "buildingView"
 
-    removeOccupant: ->
-      @set "roadType", 0
-      @set "buildingType", 0
-      @set "isOccupied", false
+      if buildingType?
+        @set "isOccupied", true
+      else
+        @set "isOccupied", false

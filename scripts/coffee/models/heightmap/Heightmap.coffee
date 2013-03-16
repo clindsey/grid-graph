@@ -1,5 +1,5 @@
 define [
-      "models/HeightmapChunk"
+      "models/heightmap/HeightmapChunk"
       "models/MapTile"
       "collections/MapTiles"
       "Alea"

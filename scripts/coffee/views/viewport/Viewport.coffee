@@ -2,11 +2,19 @@ define [
       "collections/ViewportTiles"
       "views/viewport/ViewportTile"
       "models/Viewport"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "collections/Creatures"
-      "models/Creature"
+      "collections/Buildings"
+      "models/entities/Creature"
       "views/entities/Creature"
       "models/Foreman"
+      "models/buildings/Home"
+      "views/buildings/Home"
+      "models/buildings/Farm"
+      "views/buildings/Farm"
+      "models/buildings/Road"
+      "views/buildings/Road"
+      "collections/MapTiles"
       "Backbone"
     ], (
       viewportTiles,
@@ -14,9 +22,17 @@ define [
       viewportModel,
       heightmapModel,
       creatures,
+      buildings,
       CreatureModel,
       CreatureView,
-      foremanModel) ->
+      foremanModel,
+      HomeModel,
+      HomeView,
+      FarmModel,
+      FarmView,
+      RoadModel,
+      RoadView,
+      mapTiles) ->
 
   ViewportView = Backbone.View.extend
     el: ".map-viewport"
@@ -30,6 +46,9 @@ define [
       @render()
 
       @listenTo viewportModel, "moved", @onViewportMoved
+      @listenTo creatures, "add", @onCreatureAdded
+      @listenTo buildings, "add", @onBuildingAdded
+      @listenTo buildings, "remove", @onBuildingRemoved
 
     render: ->
       @$el.css
@@ -75,24 +94,17 @@ define [
         when "move"
           ""
         when "road"
-          @putRoad tileModel
+          foremanModel.putRoad tileModel
+
         when "home"
-          @putHome tileModel
-          foremanModel.findJob tileModel.get "creature"
+          foremanModel.putHome tileModel
+
         when "farm"
-          @putFarm tileModel
-          foremanModel.findWorker tileModel
-        when "refinery"
-          @putRefinery tileModel
+          foremanModel.putFarm tileModel
+
         when "remove"
           if tileModel.get "isOccupied"
-            tileModel.removeOccupant()
-
-            creature = tileModel.get "creature"
-
-            creatures.remove creature if creature?
-
-            @informNeighbors tileModel
+            foremanModel.removeBuilding tileModel
 
     moveViewport: (jqEvent) ->
       viewportWidth = viewportModel.get "width"
@@ -115,45 +127,47 @@ define [
       _.each @grid, (viewportTileView, index) ->
         viewportTileView.setModel viewportTiles.at index
 
-    putHome: (tileModel) ->
-      tileModel.set "buildingType", 1
-
-      @informNeighbors tileModel
-
-      x = tileModel.get "x"
-      y = tileModel.get "y"
-
-      creature = new CreatureModel x: x, y: y
-      creatureView = new CreatureView model: creature
-
-      creatures.add creature
-
-      tileModel.set "creature", creature
-
-      creature.set "home", tileModel
+    onCreatureAdded: (creatureModel) ->
+      creatureView = new CreatureView model: creatureModel
 
       @$el.append creatureView.render().$el
 
-    putFarm: (tileModel) ->
-      tileModel.set "buildingType", 3
+    onBuildingRemoved: (buildingModel) ->
+      tileModels = mapTiles.where
+        x: buildingModel.get "x"
+        y: buildingModel.get "y"
 
-      @informNeighbors tileModel
+      tileModel = _.first tileModels
 
-    putRefinery: (tileModel) ->
-      tileModel.set "buildingType", 2
+      tileModel.set "buildingView", undefined
 
-      @informNeighbors tileModel
+      creatureModel = buildingModel.get "creature"
 
-    putRoad: (tileModel) ->
-      tileModel.set "roadType", 1
+      if creatureModel?
+        creatures.remove creatureModel
 
-      @informNeighbors tileModel
+        workSite = creatureModel.get "workSite"
 
-    informNeighbors: (tileModel) ->
-      x = tileModel.get "x"
-      y = tileModel.get "y"
+        if workSite?
+          workSite.set "worker", undefined
 
-      neighboringTiles = heightmapModel.getNeighboringTiles x, y
+    onBuildingAdded: (buildingModel) ->
+      if buildingModel instanceof HomeModel
+        buildingView = new HomeView model: buildingModel
 
-      _.each neighboringTiles, (neighboringTile) ->
-        neighboringTile.trigger "neighborChanged"
+      else if buildingModel instanceof FarmModel
+        buildingView = new FarmView model: buildingModel
+
+      else if buildingModel instanceof RoadModel
+        buildingView = new RoadView model: buildingModel
+
+      else
+        return
+
+      tileModels = mapTiles.where
+        x: buildingModel.get "x"
+        y: buildingModel.get "y"
+
+      tileModel = _.first tileModels
+
+      tileModel.set "buildingView", buildingView

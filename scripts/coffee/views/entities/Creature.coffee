@@ -1,6 +1,6 @@
 define [
       "views/entities/Entity"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
     ], (
       EntityView,
       heightmapModel) ->

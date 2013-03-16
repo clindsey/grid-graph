@@ -1,28 +1,94 @@
 define [
       "collections/Creatures"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "collections/MapTiles"
+      "models/entities/Creature"
+      "collections/Buildings"
+      "models/buildings/Farm"
+      "models/buildings/Road"
+      "models/buildings/Home"
       "Backbone"
     ], (
       creatures,
       heightmapModel,
-      mapTiles) ->
+      mapTiles,
+      CreatureModel,
+      buildings,
+      FarmModel,
+      RoadModel,
+      HomeModel) ->
 
   Foreman = Backbone.Model.extend
+    removeBuilding: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      foundBuildings = buildings.where
+        x: x
+        y: y
+
+      buildingModel = _.first foundBuildings
+
+      buildings.remove buildingModel
+
+      @informNeighbors tileModel
+
+    putRoad: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      roadModel = new RoadModel tileModel: tileModel, x: x, y: y
+
+      buildings.add roadModel
+
+      @informNeighbors tileModel
+
+    putFarm: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      farmModel = new FarmModel tileModel: tileModel, x: x, y: y
+
+      buildings.add farmModel
+
+      @informNeighbors tileModel
+
+      @findWorker farmModel
+
+    putHome: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      homeModel = new HomeModel tileModel: tileModel, x: x, y: y
+
+      buildings.add homeModel
+
+      @informNeighbors tileModel
+
+      creatureModel = new CreatureModel x: x, y: y
+
+      creatures.add creatureModel
+
+      creatureModel.set "home", homeModel
+
+      homeModel.set "creature", creatureModel
+
+      @findJob creatureModel
+
     assignWorkerToSite: (unemployedCreature, workSiteModel) ->
       unemployedCreature.set "workSite", workSiteModel
 
       workSiteModel.set "worker", unemployedCreature
 
     findJob: (unemployedCreature) ->
-      availableJobs = mapTiles.where
-        buildingType: 3
+      availableJobs = buildings.where
+        needsWorker: true
         worker: undefined
 
       if availableJobs.length is 0
         return
 
-      workSiteModel = availableJobs[0]
+      workSiteModel = _.first availableJobs
 
       path = unemployedCreature.findPath workSiteModel
 
@@ -38,7 +104,7 @@ define [
       if unemployedCreatures.length is 0
         return
 
-      unemployedCreature = unemployedCreatures[0]
+      unemployedCreature = _.first unemployedCreatures
 
       path = unemployedCreature.findPath workSiteModel
 
@@ -46,5 +112,14 @@ define [
         return
 
       @assignWorkerToSite unemployedCreature, workSiteModel
+
+    informNeighbors: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      neighboringTiles = heightmapModel.getNeighboringTiles x, y
+
+      _.each neighboringTiles, (neighboringTile) ->
+        neighboringTile.trigger "neighborChanged"
 
   new Foreman
