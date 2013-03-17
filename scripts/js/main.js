@@ -16,8 +16,12 @@
       underscore: {
         exports: "_"
       },
+      jQuery: {
+        exports: "$"
+      },
       Backbone: ["underscore", "jQuery"],
-      Machine: ["Base"]
+      Machine: ["Base"],
+      Bootstrap: ["jQuery"]
     },
     urlArgs: "bust=" + ((new Date()).getTime())
   });

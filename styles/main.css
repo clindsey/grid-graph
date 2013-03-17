@@ -9,3 +9,8 @@ body {
   padding-bottom: 40px;
   background-color: #ddd;
 }
+
+.game-stats {
+  text-align: center;
+  margin-top: 12px;
+}
