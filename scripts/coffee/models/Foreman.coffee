@@ -19,6 +19,26 @@ define [
       HomeModel) ->
 
   Foreman = Backbone.Model.extend
+    defaults:
+      money: 250
+
+    initialize: ->
+      @listenTo buildings, "madeMoney", @onAddMoney
+
+    onAddMoney: (amount) ->
+      money = @get "money"
+
+      money += amount
+
+      @set "money", money
+
+    removeMoney: (amount) ->
+      money = @get "money"
+
+      money -= amount
+
+      @set "money", money
+
     removeBuilding: (tileModel) ->
       x = tileModel.get "x"
       y = tileModel.get "y"
@@ -39,6 +59,11 @@ define [
 
       roadModel = new RoadModel tileModel: tileModel, x: x, y: y
 
+      if @get("money") < roadModel.get("cost")
+        return
+
+      @removeMoney roadModel.get "cost"
+
       buildings.add roadModel
 
       @informNeighbors tileModel
@@ -48,6 +73,11 @@ define [
       y = tileModel.get "y"
 
       farmModel = new FarmModel tileModel: tileModel, x: x, y: y
+
+      if @get("money") < farmModel.get("cost")
+        return
+
+      @removeMoney farmModel.get "cost"
 
       buildings.add farmModel
 
@@ -60,6 +90,11 @@ define [
       y = tileModel.get "y"
 
       homeModel = new HomeModel tileModel: tileModel, x: x, y: y
+
+      if @get("money") < homeModel.get("cost")
+        return
+
+      @removeMoney homeModel.get "cost"
 
       buildings.add homeModel
 

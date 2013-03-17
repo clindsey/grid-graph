@@ -4,6 +4,24 @@
   define(["collections/Creatures", "models/heightmap/Heightmap", "collections/MapTiles", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "Backbone"], function(creatures, heightmapModel, mapTiles, CreatureModel, buildings, FarmModel, RoadModel, HomeModel) {
     var Foreman;
     Foreman = Backbone.Model.extend({
+      defaults: {
+        money: 250
+      },
+      initialize: function() {
+        return this.listenTo(buildings, "madeMoney", this.onAddMoney);
+      },
+      onAddMoney: function(amount) {
+        var money;
+        money = this.get("money");
+        money += amount;
+        return this.set("money", money);
+      },
+      removeMoney: function(amount) {
+        var money;
+        money = this.get("money");
+        money -= amount;
+        return this.set("money", money);
+      },
       removeBuilding: function(tileModel) {
         var buildingModel, foundBuildings, x, y;
         x = tileModel.get("x");
@@ -25,6 +43,10 @@
           x: x,
           y: y
         });
+        if (this.get("money") < roadModel.get("cost")) {
+          return;
+        }
+        this.removeMoney(roadModel.get("cost"));
         buildings.add(roadModel);
         return this.informNeighbors(tileModel);
       },
@@ -37,6 +59,10 @@
           x: x,
           y: y
         });
+        if (this.get("money") < farmModel.get("cost")) {
+          return;
+        }
+        this.removeMoney(farmModel.get("cost"));
         buildings.add(farmModel);
         this.informNeighbors(tileModel);
         return this.findWorker(farmModel);
@@ -50,6 +76,10 @@
           x: x,
           y: y
         });
+        if (this.get("money") < homeModel.get("cost")) {
+          return;
+        }
+        this.removeMoney(homeModel.get("cost"));
         buildings.add(homeModel);
         this.informNeighbors(tileModel);
         creatureModel = new CreatureModel({

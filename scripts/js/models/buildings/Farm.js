@@ -6,14 +6,21 @@
     return Farm = BuildingModel.extend({
       defaults: {
         needsWorker: true,
-        stage: 0
+        stage: 0,
+        cost: 20,
+        value: 10
       },
       initialize: function() {
         BuildingModel.prototype.initialize.call(this);
         return this.listenTo(this, "worked", this.onWorked);
       },
       onWorked: function() {
-        this.set("stage", (this.get("stage") + 1) % 4);
+        var newStage;
+        newStage = (this.get("stage") + 1) % 4;
+        this.set("stage", newStage);
+        if (newStage === 0) {
+          this.trigger("madeMoney", this.get("value"));
+        }
         this.trigger("calculateBackgroundPosition");
         return this.get("tileModel").trigger("updateBackgroundPosition");
       }
