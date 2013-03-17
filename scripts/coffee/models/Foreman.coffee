@@ -68,6 +68,8 @@ define [
 
       @informNeighbors tileModel
 
+      @assignIdleWorkers()
+
     putFarm: (tileModel) ->
       x = tileModel.get "x"
       y = tileModel.get "y"
@@ -132,6 +134,36 @@ define [
         @assignWorkerToSite unemployedCreature, workSiteModel
 
         true
+
+    assignIdleWorkers: ->
+      unemployedCreatures = creatures.where
+        workSite: undefined
+
+      if unemployedCreatures.length is 0
+        return
+
+      _.some unemployedCreatures, (unemployedCreature) =>
+        availableJobs = buildings.where
+          needsWorker: true
+          worker: undefined
+
+        if availableJobs.length is 0
+          return true
+
+        _.some availableJobs, (workSiteModel) =>
+          path = unemployedCreature.findPath workSiteModel
+
+          if path.length is 0
+            return false
+
+          @assignWorkerToSite unemployedCreature, workSiteModel
+
+          true
+
+        if unemployedCreature.get("workSite")?
+          return true
+
+        false
 
     findWorker: (workSiteModel) ->
       unemployedCreatures = creatures.where

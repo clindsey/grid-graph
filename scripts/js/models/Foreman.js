@@ -48,7 +48,8 @@
         }
         this.removeMoney(roadModel.get("cost"));
         buildings.add(roadModel);
-        return this.informNeighbors(tileModel);
+        this.informNeighbors(tileModel);
+        return this.assignIdleWorkers();
       },
       putFarm: function(tileModel) {
         var farmModel, x, y;
@@ -113,6 +114,39 @@
           }
           _this.assignWorkerToSite(unemployedCreature, workSiteModel);
           return true;
+        });
+      },
+      assignIdleWorkers: function() {
+        var unemployedCreatures,
+          _this = this;
+        unemployedCreatures = creatures.where({
+          workSite: void 0
+        });
+        if (unemployedCreatures.length === 0) {
+          return;
+        }
+        return _.some(unemployedCreatures, function(unemployedCreature) {
+          var availableJobs;
+          availableJobs = buildings.where({
+            needsWorker: true,
+            worker: void 0
+          });
+          if (availableJobs.length === 0) {
+            return true;
+          }
+          _.some(availableJobs, function(workSiteModel) {
+            var path;
+            path = unemployedCreature.findPath(workSiteModel);
+            if (path.length === 0) {
+              return false;
+            }
+            _this.assignWorkerToSite(unemployedCreature, workSiteModel);
+            return true;
+          });
+          if (unemployedCreature.get("workSite") != null) {
+            return true;
+          }
+          return false;
         });
       },
       findWorker: function(workSiteModel) {

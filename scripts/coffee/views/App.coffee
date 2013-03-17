@@ -5,7 +5,6 @@ define [
       "models/heightmap/Heightmap"
       "Alea"
       "Backbone"
-      "Bootstrap"
     ], (
       ViewportView,
       viewportModel,
@@ -16,9 +15,6 @@ define [
     el: document
 
     initialize: ->
-      $("[data-toggle=tooltip]").tooltip
-        container: "body"
-
       toolbarView = new ToolbarView
 
       new ViewportView

@@ -3,11 +3,11 @@
   margin-top: 12px;
 }
 
-.action-toolbar .btn-group-vertical > .btn {
-  width: 100%;
+.action-toolbar .btn-group > .dropdown-menu li {
   text-align: left;
 }
 
-.action-toolbar .btn-group-vertical .btn [class^="icon-"] {
-  margin-right: 7px;
+.action-toolbar .btn-group > .dropdown-menu li [class^="icon-"],
+.action-toolbar .btn-group > .dropdown-btn [class^="icon-"] {
+  margin-right: 4px;
 }
