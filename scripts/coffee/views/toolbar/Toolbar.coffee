@@ -18,6 +18,7 @@ define [
 
     events:
       "click .btn": "onBtnClick"
+      "click .dropdown-btn": "onDropdownBtnClick"
       "click .dropdown-menu .road-btn": "onRoadBtnClick"
       "click .dropdown-menu .home-btn": "onHomeBtnClick"
       "click .dropdown-menu .farm-btn": "onFarmBtnClick"
@@ -82,6 +83,9 @@ define [
 
     onMoveBtnClick: ->
       @activeContext = "move"
+
+    onDropdownBtnClick: ->
+      @activeContext = @menuOption
 
     onRoadBtnClick: ->
       @activeContext = "road"

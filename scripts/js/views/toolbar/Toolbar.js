@@ -10,6 +10,7 @@
       template: _.template(toolbarTemplate),
       events: {
         "click .btn": "onBtnClick",
+        "click .dropdown-btn": "onDropdownBtnClick",
         "click .dropdown-menu .road-btn": "onRoadBtnClick",
         "click .dropdown-menu .home-btn": "onHomeBtnClick",
         "click .dropdown-menu .farm-btn": "onFarmBtnClick",
@@ -74,6 +75,9 @@
       },
       onMoveBtnClick: function() {
         return this.activeContext = "move";
+      },
+      onDropdownBtnClick: function() {
+        return this.activeContext = this.menuOption;
       },
       onRoadBtnClick: function() {
         this.activeContext = "road";

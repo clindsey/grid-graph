@@ -143,9 +143,6 @@
             _this.assignWorkerToSite(unemployedCreature, workSiteModel);
             return true;
           });
-          if (unemployedCreature.get("workSite") != null) {
-            return true;
-          }
           return false;
         });
       },

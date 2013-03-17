@@ -160,9 +160,6 @@ define [
 
           true
 
-        if unemployedCreature.get("workSite")?
-          return true
-
         false
 
     findWorker: (workSiteModel) ->
