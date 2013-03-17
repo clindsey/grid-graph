@@ -151,6 +151,11 @@ define [
         if workSite?
           workSite.set "worker", undefined
 
+      creatureModel = buildingModel.get "worker"
+
+      if creatureModel?
+        creatureModel.set "workSite", undefined
+
     onBuildingAdded: (buildingModel) ->
       if buildingModel instanceof HomeModel
         buildingView = new HomeView model: buildingModel

@@ -5,7 +5,17 @@
     var Farm;
     return Farm = BuildingModel.extend({
       defaults: {
-        needsWorker: true
+        needsWorker: true,
+        stage: 0
+      },
+      initialize: function() {
+        BuildingModel.prototype.initialize.call(this);
+        return this.listenTo(this, "worked", this.onWorked);
+      },
+      onWorked: function() {
+        this.set("stage", (this.get("stage") + 1) % 4);
+        this.trigger("calculateBackgroundPosition");
+        return this.get("tileModel").trigger("updateBackgroundPosition");
       }
     });
   });

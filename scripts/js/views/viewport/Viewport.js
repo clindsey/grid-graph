@@ -112,8 +112,12 @@
           creatures.remove(creatureModel);
           workSite = creatureModel.get("workSite");
           if (workSite != null) {
-            return workSite.set("worker", void 0);
+            workSite.set("worker", void 0);
           }
+        }
+        creatureModel = buildingModel.get("worker");
+        if (creatureModel != null) {
+          return creatureModel.set("workSite", void 0);
         }
       },
       onBuildingAdded: function(buildingModel) {

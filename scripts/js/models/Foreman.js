@@ -66,7 +66,8 @@
         return workSiteModel.set("worker", unemployedCreature);
       },
       findJob: function(unemployedCreature) {
-        var availableJobs, path, workSiteModel;
+        var availableJobs,
+          _this = this;
         availableJobs = buildings.where({
           needsWorker: true,
           worker: void 0
@@ -74,27 +75,34 @@
         if (availableJobs.length === 0) {
           return;
         }
-        workSiteModel = _.first(availableJobs);
-        path = unemployedCreature.findPath(workSiteModel);
-        if (path.length === 0) {
-          return;
-        }
-        return this.assignWorkerToSite(unemployedCreature, workSiteModel);
+        return _.some(availableJobs, function(workSiteModel) {
+          var path;
+          path = unemployedCreature.findPath(workSiteModel);
+          if (path.length === 0) {
+            return false;
+          }
+          _this.assignWorkerToSite(unemployedCreature, workSiteModel);
+          return true;
+        });
       },
       findWorker: function(workSiteModel) {
-        var path, unemployedCreature, unemployedCreatures;
+        var unemployedCreatures,
+          _this = this;
         unemployedCreatures = creatures.where({
           workSite: void 0
         });
         if (unemployedCreatures.length === 0) {
           return;
         }
-        unemployedCreature = _.first(unemployedCreatures);
-        path = unemployedCreature.findPath(workSiteModel);
-        if (path.length === 0) {
-          return;
-        }
-        return this.assignWorkerToSite(unemployedCreature, workSiteModel);
+        return _.some(unemployedCreatures, function(unemployedCreature) {
+          var path;
+          path = unemployedCreature.findPath(workSiteModel);
+          if (path.length === 0) {
+            return false;
+          }
+          _this.assignWorkerToSite(unemployedCreature, workSiteModel);
+          return true;
+        });
       },
       informNeighbors: function(tileModel) {
         var neighboringTiles, x, y;

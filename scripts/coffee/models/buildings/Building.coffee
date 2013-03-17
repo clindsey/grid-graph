@@ -6,3 +6,5 @@ define [
   Building = Backbone.Model.extend
     defaults:
       needsWorker: false
+
+    initialize: ->

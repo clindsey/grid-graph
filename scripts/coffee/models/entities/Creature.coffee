@@ -125,8 +125,8 @@ define [
         @trigger "step", nearRoad
 
         @set
-          "x": @get("x") + nearRoad[0]
-          "y": @get("y") + nearRoad[1]
+          "x": heightmapModel.clampX @get("x") + nearRoad[0]
+          "y": heightmapModel.clampY @get("y") + nearRoad[1]
 
         direction = "south"
 
@@ -145,6 +145,8 @@ define [
         !!@get("path").length
 
       water: ->
+        @get("workSite").trigger "worked"
+
         homeModel = @get "home"
 
         path = @findPath homeModel
@@ -163,6 +165,17 @@ define [
         workSiteModel = @get "workSite"
 
         if workSiteModel is undefined
+          homeModel = @get "home"
+
+          path = @findPath homeModel
+
+          if path.length <= 1
+            return false
+
+          @set "path", path
+
+          console.log "shit"
+          @set "state", @get("state").warp("water")
           return false
 
         workX = workSiteModel.get "x"

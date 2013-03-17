@@ -6,6 +6,13 @@
     return Farm = Backbone.View.extend({
       backgroundPositionX: -32,
       backgroundPositionY: -272,
+      initialize: function() {
+        this.listenTo(this.model, "calculateBackgroundPosition", this.calculateBackgroundPosition);
+        return this.calculateBackgroundPosition;
+      },
+      calculateBackgroundPosition: function() {
+        return this.backgroundPositionX = 0 - 32 - (this.model.get("stage") * 16);
+      },
       render: function() {}
     });
   });

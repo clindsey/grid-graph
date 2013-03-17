@@ -111,8 +111,8 @@
           }
           this.trigger("step", nearRoad);
           this.set({
-            "x": this.get("x") + nearRoad[0],
-            "y": this.get("y") + nearRoad[1]
+            "x": heightmapModel.clampX(this.get("x") + nearRoad[0]),
+            "y": heightmapModel.clampY(this.get("y") + nearRoad[1])
           });
           direction = "south";
           if (nearRoad[0] === 1) {
@@ -134,6 +134,7 @@
         },
         water: function() {
           var homeModel, path;
+          this.get("workSite").trigger("worked");
           homeModel = this.get("home");
           path = this.findPath(homeModel);
           if (path.length === 0) {
@@ -142,13 +143,21 @@
           return this.set("path", path);
         },
         canWater: function() {
-          var path, workSiteModel, workX, workY, x, y;
+          var homeModel, path, workSiteModel, workX, workY, x, y;
           path = this.get("path");
           if (path.length !== 0) {
             return false;
           }
           workSiteModel = this.get("workSite");
           if (workSiteModel === void 0) {
+            homeModel = this.get("home");
+            path = this.findPath(homeModel);
+            if (path.length <= 1) {
+              return false;
+            }
+            this.set("path", path);
+            console.log("shit");
+            this.set("state", this.get("state").warp("water"));
             return false;
           }
           workX = workSiteModel.get("x");

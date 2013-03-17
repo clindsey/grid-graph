@@ -88,14 +88,15 @@ define [
       if availableJobs.length is 0
         return
 
-      workSiteModel = _.first availableJobs
+      _.some availableJobs, (workSiteModel) =>
+        path = unemployedCreature.findPath workSiteModel
 
-      path = unemployedCreature.findPath workSiteModel
+        if path.length is 0
+          return false
 
-      if path.length is 0
-        return
+        @assignWorkerToSite unemployedCreature, workSiteModel
 
-      @assignWorkerToSite unemployedCreature, workSiteModel
+        true
 
     findWorker: (workSiteModel) ->
       unemployedCreatures = creatures.where
@@ -104,14 +105,15 @@ define [
       if unemployedCreatures.length is 0
         return
 
-      unemployedCreature = _.first unemployedCreatures
+      _.some unemployedCreatures, (unemployedCreature) =>
+        path = unemployedCreature.findPath workSiteModel
 
-      path = unemployedCreature.findPath workSiteModel
+        if path.length is 0
+          return false
 
-      if path.length is 0
-        return
+        @assignWorkerToSite unemployedCreature, workSiteModel
 
-      @assignWorkerToSite unemployedCreature, workSiteModel
+        true
 
     informNeighbors: (tileModel) ->
       x = tileModel.get "x"
