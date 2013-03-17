@@ -1,11 +1,150 @@
-// javascript-astar
-// http://github.com/bgrins/javascript-astar
-// Freely distributable under the MIT License.
-// Implements the astar search algorithm in javascript using a binary heap.
-var GraphNodeType={OPEN:0,WALL:1};function Graph(a){for(var c=[],b=0;b<a.length;b++){c[b]=[];for(var d=0,e=a[b];d<e.length;d++)c[b][d]=new GraphNode(b,d,e[d])}this.input=a;this.nodes=c}Graph.prototype.toString=function(){for(var a="\n",c=this.nodes,b,d,e,g,f=0,h=c.length;f<h;f++){b="";d=c[f];for(e=0,g=d.length;e<g;e++)b+=d[e].type+" ";a=a+b+"\n"}return a};function GraphNode(a,c,b){this.data={};this.x=a;this.y=c;this.pos={x:a,y:c};this.type=b}
-GraphNode.prototype.toString=function(){return"["+this.x+" "+this.y+"]"};GraphNode.prototype.isWall=function(){return this.type==GraphNodeType.WALL};function BinaryHeap(a){this.content=[];this.scoreFunction=a}
-BinaryHeap.prototype={push:function(a){this.content.push(a);this.sinkDown(this.content.length-1)},pop:function(){var a=this.content[0],c=this.content.pop();0<this.content.length&&(this.content[0]=c,this.bubbleUp(0));return a},remove:function(a){var c=this.content.indexOf(a),b=this.content.pop();c!==this.content.length-1&&(this.content[c]=b,this.scoreFunction(b)<this.scoreFunction(a)?this.sinkDown(c):this.bubbleUp(c))},size:function(){return this.content.length},rescoreElement:function(a){this.sinkDown(this.content.indexOf(a))},
-sinkDown:function(a){for(var c=this.content[a];0<a;){var b=(a+1>>1)-1,d=this.content[b];if(this.scoreFunction(c)<this.scoreFunction(d))this.content[b]=c,this.content[a]=d,a=b;else break}},bubbleUp:function(a){for(var c=this.content.length,b=this.content[a],d=this.scoreFunction(b);;){var e=a+1<<1,g=e-1,f=null;if(g<c){var h=this.scoreFunction(this.content[g]);h<d&&(f=g)}if(e<c&&this.scoreFunction(this.content[e])<(null===f?d:h))f=e;if(null!==f)this.content[a]=this.content[f],this.content[f]=b,a=f;else break}}};
-var astar={init:function(a){for(var b=0,g=a.length;b<g;b++)for(var d=0,c=a[b].length;d<c;d++){var f=a[b][d];f.f=0;f.g=0;f.h=0;f.cost=1;f.visited=!1;f.closed=!1;f.parent=null}},heap:function(){return new BinaryHeap(function(a){return a.f})},search:function(a,b,g,d,c){astar.init(a);var c=c||astar.manhattan,d=!!d,f=astar.heap();for(f.push(b);0<f.size();){b=f.pop();if(b===g){a=b;for(g=[];a.parent;)g.push(a),a=a.parent;return g.reverse()}b.closed=!0;for(var i=astar.neighbors(a,b,d),h=0,l=i.length;h<l;h++){var e=
-i[h];if(!e.closed&&!e.isWall()){var j=b.g+e.cost,k=e.visited;if(!k||j<e.g)e.visited=!0,e.parent=b,e.h=e.h||c(e.pos,g.pos),e.g=j,e.f=e.g+e.h,k?f.rescoreElement(e):f.push(e)}}}return[]},manhattan:function(a,b){var g=Math.abs(b.x-a.x),d=Math.abs(b.y-a.y);return g+d},neighbors:function(a,b,g){var d=[],c=b.x,b=b.y;a[c-1]&&a[c-1][b]&&d.push(a[c-1][b]);a[c+1]&&a[c+1][b]&&d.push(a[c+1][b]);a[c]&&a[c][b-1]&&d.push(a[c][b-1]);a[c]&&a[c][b+1]&&d.push(a[c][b+1]);g&&(a[c-1]&&a[c-1][b-1]&&d.push(a[c-1][b-1]),a[c+
-1]&&a[c+1][b-1]&&d.push(a[c+1][b-1]),a[c-1]&&a[c-1][b+1]&&d.push(a[c-1][b+1]),a[c+1]&&a[c+1][b+1]&&d.push(a[c+1][b+1]));return d}};
+define(function() {
+
+    var AStar = (function () {
+
+        /**
+         * A* (A-Star) algorithm for a path finder
+         * @author  Andrea Giammarchi
+         * @license Mit Style License
+         */
+
+        function diagonalSuccessors($N, $S, $E, $W, N, S, E, W, grid, rows, cols, result, i) {
+            if($N) {
+                $E && !grid[N][E] && (result[i++] = {x:E, y:N});
+                $W && !grid[N][W] && (result[i++] = {x:W, y:N});
+            }
+            if($S){
+                $E && !grid[S][E] && (result[i++] = {x:E, y:S});
+                $W && !grid[S][W] && (result[i++] = {x:W, y:S});
+            }
+            return result;
+        }
+
+        function diagonalSuccessorsFree($N, $S, $E, $W, N, S, E, W, grid, rows, cols, result, i) {
+            $N = N > -1;
+            $S = S < rows;
+            $E = E < cols;
+            $W = W > -1;
+            if($E) {
+                $N && !grid[N][E] && (result[i++] = {x:E, y:N});
+                $S && !grid[S][E] && (result[i++] = {x:E, y:S});
+            }
+            if($W) {
+                $N && !grid[N][W] && (result[i++] = {x:W, y:N});
+                $S && !grid[S][W] && (result[i++] = {x:W, y:S});
+            }
+            return result;
+        }
+
+        function nothingToDo($N, $S, $E, $W, N, S, E, W, grid, rows, cols, result, i) {
+            return result;
+        }
+
+        function successors(find, x, y, grid, rows, cols){
+            var
+                N = y - 1,
+                S = y + 1,
+                E = x + 1,
+                W = x - 1,
+                $N = N > -1 && !grid[N][x],
+                $S = S < rows && !grid[S][x],
+                $E = E < cols && !grid[y][E],
+                $W = W > -1 && !grid[y][W],
+                result = [],
+                i = 0
+            ;
+            $N && (result[i++] = {x:x, y:N});
+            $E && (result[i++] = {x:E, y:y});
+            $S && (result[i++] = {x:x, y:S});
+            $W && (result[i++] = {x:W, y:y});
+            return find($N, $S, $E, $W, N, S, E, W, grid, rows, cols, result, i);
+        }
+
+        function diagonal(start, end, f1, f2) {
+            return f2(f1(start.x - end.x), f1(start.y - end.y));
+        }
+
+        function euclidean(start, end, f1, f2) {
+            var
+                x = start.x - end.x,
+                y = start.y - end.y
+            ;
+            return f2(x * x + y * y);
+        }
+
+        function manhattan(start, end, f1, f2) {
+            return f1(start.x - end.x) + f1(start.y - end.y);
+        }
+
+        function AStar(grid, start, end, f) {
+            var
+                cols = grid[0].length,
+                rows = grid.length,
+                limit = cols * rows,
+                f1 = Math.abs,
+                f2 = Math.max,
+                list = {},
+                result = [],
+                open = [{x:start[0], y:start[1], f:0, g:0, v:start[0]+start[1]*cols}],
+                length = 1,
+                adj, distance, find, i, j, max, min, current, next
+            ;
+            end = {x:end[0], y:end[1], v:end[0]+end[1]*cols};
+            switch (f) {
+                case "Diagonal":
+                    find = diagonalSuccessors;
+                case "DiagonalFree":
+                    distance = diagonal;
+                    break;
+                case "Euclidean":
+                    find = diagonalSuccessors;
+                case "EuclideanFree":
+                    f2 = Math.sqrt;
+                    distance = euclidean;
+                    break;
+                default:
+                    distance = manhattan;
+                    find = nothingToDo;
+                    break;
+            }
+            find || (find = diagonalSuccessorsFree);
+            do {
+                max = limit;
+                min = 0;
+                for(i = 0; i < length; ++i) {
+                    if((f = open[i].f) < max) {
+                        max = f;
+                        min = i;
+                    }
+                };
+                current = open.splice(min, 1)[0];
+                if (current.v != end.v) {
+                    --length;
+                    next = successors(find, current.x, current.y, grid, rows, cols);
+                    for(i = 0, j = next.length; i < j; ++i){
+                        (adj = next[i]).p = current;
+                        adj.f = adj.g = 0;
+                        adj.v = adj.x + adj.y * cols;
+                        if(!(adj.v in list)){
+                            adj.f = (adj.g = current.g + distance(adj, current, f1, f2)) + distance(adj, end, f1, f2);
+                            open[length++] = adj;
+                            list[adj.v] = 1;
+                        }
+                    }
+                } else {
+                    i = length = 0;
+                    do {
+                        result[i++] = [current.x, current.y];
+                    } while (current = current.p);
+                    result.reverse();
+                }
+            } while (length);
+            return result;
+        }
+
+        return AStar;
+
+    }());
+    
+    return AStar;
+});

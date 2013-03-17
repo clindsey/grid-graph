@@ -1,5 +1,5 @@
 define [
-      "models/Creature"
+      "models/entities/Creature"
       "Backbone"
     ], (
       CreatureModel) ->

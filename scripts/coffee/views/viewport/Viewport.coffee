@@ -2,10 +2,19 @@ define [
       "collections/ViewportTiles"
       "views/viewport/ViewportTile"
       "models/Viewport"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "collections/Creatures"
-      "models/Creature"
+      "collections/Buildings"
+      "models/entities/Creature"
       "views/entities/Creature"
+      "models/Foreman"
+      "models/buildings/Home"
+      "views/buildings/Home"
+      "models/buildings/Farm"
+      "views/buildings/Farm"
+      "models/buildings/Road"
+      "views/buildings/Road"
+      "collections/MapTiles"
       "Backbone"
     ], (
       viewportTiles,
@@ -13,8 +22,17 @@ define [
       viewportModel,
       heightmapModel,
       creatures,
+      buildings,
       CreatureModel,
-      CreatureView) ->
+      CreatureView,
+      foremanModel,
+      HomeModel,
+      HomeView,
+      FarmModel,
+      FarmView,
+      RoadModel,
+      RoadView,
+      mapTiles) ->
 
   ViewportView = Backbone.View.extend
     el: ".map-viewport"
@@ -28,6 +46,9 @@ define [
       @render()
 
       @listenTo viewportModel, "moved", @onViewportMoved
+      @listenTo creatures, "add", @onCreatureAdded
+      @listenTo buildings, "add", @onBuildingAdded
+      @listenTo buildings, "remove", @onBuildingRemoved
 
     render: ->
       @$el.css
@@ -61,26 +82,29 @@ define [
     onMapTileClick: (viewportTileView) ->
       tileModel = viewportTileView.model
 
+      context = @options.toolbarView.activeContext
+
+      if tileModel.get("isOccupied") is true and context isnt "remove"
+        return
+
+      if tileModel.get("type") isnt 255
+        return
+
       switch @options.toolbarView.activeContext
         when "move"
           ""
         when "road"
-          @putRoad tileModel
+          foremanModel.putRoad tileModel
+
         when "home"
-          @putHome tileModel
+          foremanModel.putHome tileModel
+
         when "farm"
-          @putFarm tileModel
-        when "refinery"
-          @putRefinery tileModel
+          foremanModel.putFarm tileModel
+
         when "remove"
           if tileModel.get "isOccupied"
-            tileModel.removeOccupant()
-
-            creature = tileModel.get "creature"
-
-            creatures.remove creature if creature?
-
-            @informNeighbors tileModel
+            foremanModel.removeBuilding tileModel
 
     moveViewport: (jqEvent) ->
       viewportWidth = viewportModel.get "width"
@@ -103,48 +127,52 @@ define [
       _.each @grid, (viewportTileView, index) ->
         viewportTileView.setModel viewportTiles.at index
 
-    putHome: (tileModel) ->
-      tileModel.set "buildingType", 1
-
-      @informNeighbors tileModel
-
-      x = tileModel.get "x"
-      y = tileModel.get "y"
-
-      creature = new CreatureModel x: x, y: y
-      creatureView = new CreatureView model: creature
-
-      creatures.add creature
-
-      tileModel.set "creature", creature
+    onCreatureAdded: (creatureModel) ->
+      creatureView = new CreatureView model: creatureModel
 
       @$el.append creatureView.render().$el
 
-    putFarm: (tileModel) ->
-      tileModel.set "buildingType", 3
+    onBuildingRemoved: (buildingModel) ->
+      tileModels = mapTiles.where
+        x: buildingModel.get "x"
+        y: buildingModel.get "y"
 
-      @informNeighbors tileModel
+      tileModel = _.first tileModels
 
-    putRefinery: (tileModel) ->
-      tileModel.set "buildingType", 2
+      tileModel.set "buildingView", undefined
 
-      @informNeighbors tileModel
+      creatureModel = buildingModel.get "creature"
 
-    putRoad: (tileModel) ->
-      roadType = tileModel.get "roadType"
-      occupied = tileModel.get "isOccupied"
-      tileType = tileModel.get "type"
+      if creatureModel?
+        creatures.remove creatureModel
 
-      if occupied is false and tileType is 255
-        tileModel.set "roadType", 1
+        workSite = creatureModel.get "workSite"
 
-        @informNeighbors tileModel
+        if workSite?
+          workSite.set "worker", undefined
 
-    informNeighbors: (tileModel) ->
-      x = tileModel.get "x"
-      y = tileModel.get "y"
+      creatureModel = buildingModel.get "worker"
 
-      neighboringTiles = heightmapModel.getNeighboringTiles x, y
+      if creatureModel?
+        creatureModel.set "workSite", undefined
 
-      _.each neighboringTiles, (neighboringTile) ->
-        neighboringTile.trigger "neighborChanged"
+    onBuildingAdded: (buildingModel) ->
+      if buildingModel instanceof HomeModel
+        buildingView = new HomeView model: buildingModel
+
+      else if buildingModel instanceof FarmModel
+        buildingView = new FarmView model: buildingModel
+
+      else if buildingModel instanceof RoadModel
+        buildingView = new RoadView model: buildingModel
+
+      else
+        return
+
+      tileModels = mapTiles.where
+        x: buildingModel.get "x"
+        y: buildingModel.get "y"
+
+      tileModel = _.first tileModels
+
+      tileModel.set "buildingView", buildingView

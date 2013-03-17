@@ -10,14 +10,18 @@
       Alea: "../../vendor/alea/alea",
       Base: "../../vendor/base/base",
       Machine: "../../vendor/machine/machine",
-      astar: "../../vendor/astar/astar"
+      AStar: "../../vendor/astar/astar"
     },
     shim: {
       underscore: {
         exports: "_"
       },
+      jQuery: {
+        exports: "$"
+      },
       Backbone: ["underscore", "jQuery"],
-      Machine: ["Base"]
+      Machine: ["Base"],
+      Bootstrap: ["jQuery"]
     },
     urlArgs: "bust=" + ((new Date()).getTime())
   });

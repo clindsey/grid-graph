@@ -1,5 +1,5 @@
 define [
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "collections/ViewportTiles"
       "Backbone"
     ], (

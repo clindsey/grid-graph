@@ -1,7 +1,8 @@
 define [
+      "models/Foreman"
       "Backbone"
     ], (
-      ) ->
+      foremanModel) ->
 
   ToolbarView = Backbone.View.extend
     el: ".action-toolbar"
@@ -14,11 +15,19 @@ define [
       "click .road-btn": "onRoadBtnClick"
       "click .home-btn": "onHomeBtnClick"
       "click .farm-btn": "onFarmBtnClick"
-      "click .refinery-btn": "onRefineryBtnClick"
       "click .remove-btn": "onRemoveBtnClick"
 
     initialize: ->
       $(".#{@activeContext}-btn").addClass "active"
+
+      @listenTo foremanModel, "change:money", @onMoneyChanged
+
+      @onMoneyChanged()
+
+    onMoneyChanged: ->
+      money = foremanModel.get "money"
+
+      $(".money-count").html "$#{money}"
 
     onBtnClick: (jqEvent) ->
       @$(".btn.active").removeClass "active"
@@ -36,9 +45,6 @@ define [
 
     onFarmBtnClick: ->
       @activeContext = "farm"
-
-    onRefineryBtnClick: ->
-      @activeContext = "refinery"
 
     onRemoveBtnClick: ->
       @activeContext = "remove"

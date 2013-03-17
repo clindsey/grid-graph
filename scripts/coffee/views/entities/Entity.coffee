@@ -1,6 +1,6 @@
 define [
       "models/Viewport"
-      "models/Heightmap"
+      "models/heightmap/Heightmap"
       "Backbone"
     ], (
       viewportModel,
