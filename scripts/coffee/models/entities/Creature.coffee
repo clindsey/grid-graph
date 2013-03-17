@@ -174,7 +174,6 @@ define [
 
           @set "path", path
 
-          console.log "shit"
           @set "state", @get("state").warp("water")
           return false
 

@@ -156,7 +156,6 @@
               return false;
             }
             this.set("path", path);
-            console.log("shit");
             this.set("state", this.get("state").warp("water"));
             return false;
           }
