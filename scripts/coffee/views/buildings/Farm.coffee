@@ -1,18 +1,12 @@
 define [
+      "views/buildings/Workable"
       "Backbone"
     ], (
-      ) ->
+      WorkableView) ->
 
-  Farm = Backbone.View.extend
+  Farm = WorkableView.extend
     backgroundPositionX: -32
     backgroundPositionY: -272
 
-    initialize: ->
-      @listenTo @model, "calculateBackgroundPosition", @calculateBackgroundPosition
-
-      @calculateBackgroundPosition
-
     calculateBackgroundPosition: ->
       @backgroundPositionX = 0 - 32 - (@model.get("stage") * 16)
-
-    render: ->

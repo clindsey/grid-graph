@@ -14,6 +14,14 @@ define [
       "views/buildings/Farm"
       "models/buildings/Road"
       "views/buildings/Road"
+      "models/buildings/Mine"
+      "views/buildings/Mine"
+      "models/buildings/LumberMill"
+      "views/buildings/LumberMill"
+      "models/buildings/WaterWell"
+      "views/buildings/WaterWell"
+      "models/buildings/Factory"
+      "views/buildings/Factory"
       "collections/MapTiles"
       "Backbone"
     ], (
@@ -32,6 +40,14 @@ define [
       FarmView,
       RoadModel,
       RoadView,
+      MineModel,
+      MineView,
+      LumberMillModel,
+      LumberMillView,
+      WaterWellModel,
+      WaterWellView,
+      FactoryModel,
+      FactoryView,
       mapTiles) ->
 
   ViewportView = Backbone.View.extend
@@ -102,6 +118,18 @@ define [
         when "farm"
           foremanModel.putFarm tileModel
 
+        when "mine"
+          foremanModel.putMine tileModel
+
+        when "lumber mill"
+          foremanModel.putLumberMill tileModel
+
+        when "water well"
+          foremanModel.putWaterWell tileModel
+
+        when "factory"
+          foremanModel.putFactory tileModel
+
         when "remove"
           if tileModel.get "isOccupied"
             foremanModel.removeBuilding tileModel
@@ -165,6 +193,18 @@ define [
 
       else if buildingModel instanceof RoadModel
         buildingView = new RoadView model: buildingModel
+
+      else if buildingModel instanceof MineModel
+        buildingView = new MineView model: buildingModel
+
+      else if buildingModel instanceof LumberMillModel
+        buildingView = new LumberMillView model: buildingModel
+
+      else if buildingModel instanceof WaterWellModel
+        buildingView = new WaterWellView model: buildingModel
+
+      else if buildingModel instanceof FactoryModel
+        buildingView = new FactoryView model: buildingModel
 
       else
         return

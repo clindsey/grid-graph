@@ -1,11 +1,11 @@
 define [
       "text!../../../../templates/toolbar/toolbar.html"
-      "models/Foreman"
+      "models/Overview"
       "Backbone"
       "Bootstrap"
     ], (
       toolbarTemplate,
-      foremanModel) ->
+      overviewModel) ->
 
   ToolbarView = Backbone.View.extend
     el: ".action-toolbar"
@@ -54,16 +54,21 @@ define [
         label: "Factory"
 
     initialize: ->
-      @listenTo foremanModel, "change:money", @onMoneyChanged
-
-      @onMoneyChanged()
+      @listenTo overviewModel, "change:money", @onMoneyChanged
 
       @render()
+
+      @onMoneyChanged()
 
     render: ->
       @$el.html @template @contextIconLookup[@menuOption]
 
-      $(".#{@activeContext}-btn").addClass "active"
+      @$(".btn-group > .#{@activeContext}-btn").addClass "active btn-primary"
+
+      @$("[data-toggle=tooltip]").tooltip
+        container: "body"
+        placement: "left"
+        html: true
 
       @
 
@@ -71,15 +76,20 @@ define [
       jqEvent.preventDefault()
       jqEvent.stopPropagation()
 
+      @$("[data-toggle=tooltip]").tooltip "hide"
+
       @render()
 
       @$(".dropdown-toggle, .btn-group.open").removeClass "active open"
-      @$(".dropdown-btn").addClass "active"
+      @$(".dropdown-btn").addClass "active btn-primary"
 
     onBtnClick: (jqEvent) ->
-      @$(".btn").removeClass "active"
+      if $(jqEvent.currentTarget).hasClass "dropdown-toggle"
+        return
 
-      $(jqEvent.currentTarget).addClass "active"
+      @$(".btn").removeClass "active btn-primary"
+
+      $(jqEvent.currentTarget).addClass "active btn-primary"
 
     onMoveBtnClick: ->
       @activeContext = "move"
@@ -119,6 +129,6 @@ define [
       @activeContext = "remove"
 
     onMoneyChanged: ->
-      money = foremanModel.get "money"
+      money = overviewModel.get "money"
 
-      $(".money-count").html "$#{money}"
+      @$(".money-count").html "$#{money}"

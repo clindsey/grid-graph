@@ -7,6 +7,11 @@ define [
       "models/buildings/Farm"
       "models/buildings/Road"
       "models/buildings/Home"
+      "models/buildings/Mine"
+      "models/buildings/LumberMill"
+      "models/buildings/WaterWell"
+      "models/buildings/Factory"
+      "models/Overview"
       "Backbone"
     ], (
       creatures,
@@ -16,29 +21,14 @@ define [
       buildings,
       FarmModel,
       RoadModel,
-      HomeModel) ->
+      HomeModel,
+      MineModel,
+      LumberMillModel,
+      WaterWellModel,
+      FactoryModel,
+      overview) ->
 
   Foreman = Backbone.Model.extend
-    defaults:
-      money: 250
-
-    initialize: ->
-      @listenTo buildings, "madeMoney", @onAddMoney
-
-    onAddMoney: (amount) ->
-      money = @get "money"
-
-      money += amount
-
-      @set "money", money
-
-    removeMoney: (amount) ->
-      money = @get "money"
-
-      money -= amount
-
-      @set "money", money
-
     removeBuilding: (tileModel) ->
       x = tileModel.get "x"
       y = tileModel.get "y"
@@ -59,10 +49,8 @@ define [
 
       roadModel = new RoadModel tileModel: tileModel, x: x, y: y
 
-      if @get("money") < roadModel.get("cost")
+      unless overview.purchase roadModel.get "cost"
         return
-
-      @removeMoney roadModel.get "cost"
 
       buildings.add roadModel
 
@@ -76,10 +64,8 @@ define [
 
       farmModel = new FarmModel tileModel: tileModel, x: x, y: y
 
-      if @get("money") < farmModel.get("cost")
+      unless overview.purchase farmModel.get "cost"
         return
-
-      @removeMoney farmModel.get "cost"
 
       buildings.add farmModel
 
@@ -93,10 +79,8 @@ define [
 
       homeModel = new HomeModel tileModel: tileModel, x: x, y: y
 
-      if @get("money") < homeModel.get("cost")
+      unless overview.purchase homeModel.get "cost"
         return
-
-      @removeMoney homeModel.get "cost"
 
       buildings.add homeModel
 
@@ -111,6 +95,66 @@ define [
       homeModel.set "creature", creatureModel
 
       @findJob creatureModel
+
+    putMine: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      mineModel = new MineModel tileModel: tileModel, x: x, y: y
+
+      unless overview.purchase mineModel.get "cost"
+        return
+
+      buildings.add mineModel
+
+      @informNeighbors tileModel
+
+      @findWorker mineModel
+
+    putLumberMill: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      lumberMillModel = new LumberMillModel tileModel: tileModel, x: x, y: y
+
+      unless overview.purchase lumberMillModel.get "cost"
+        return
+
+      buildings.add lumberMillModel
+
+      @informNeighbors tileModel
+
+      @findWorker lumberMillModel
+
+    putWaterWell: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      waterWellModel = new WaterWellModel tileModel: tileModel, x: x, y: y
+
+      unless overview.purchase waterWellModel.get "cost"
+        return
+
+      buildings.add waterWellModel
+
+      @informNeighbors tileModel
+
+      @findWorker waterWellModel
+
+    putFactory: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      factoryModel = new FactoryModel tileModel: tileModel, x: x, y: y
+
+      unless overview.purchase factoryModel.get "cost"
+        return
+
+      buildings.add factoryModel
+
+      @informNeighbors tileModel
+
+      @findWorker factoryModel
 
     assignWorkerToSite: (unemployedCreature, workSiteModel) ->
       unemployedCreature.set "workSite", workSiteModel

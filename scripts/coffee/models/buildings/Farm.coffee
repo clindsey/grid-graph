@@ -1,20 +1,15 @@
 define [
-      "models/buildings/Building"
+      "models/buildings/Workable"
       "Backbone"
     ], (
-      BuildingModel) ->
+      WorkableModel) ->
 
-  Farm = BuildingModel.extend
+  Farm = WorkableModel.extend
     defaults:
       needsWorker: true
       stage: 0
-      cost: 20
-      value: 10
-
-    initialize: ->
-      BuildingModel.prototype.initialize.call @
-
-      @listenTo @, "worked", @onWorked
+      cost: 10
+      value: 30
 
     onWorked: ->
       newStage = (@get("stage") + 1) % 4
