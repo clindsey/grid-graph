@@ -88,11 +88,16 @@
         canSleep: function() {
           var homeModel, homeX, homeY, path, x, y;
           path = this.get("path");
+          if ((this.get("home") != null) === false || (this.get("workSite") != null) === false) {
+            if (path.length === 0) {
+              return true;
+            }
+          }
           if (path.length !== 0) {
             return false;
           }
           homeModel = this.get("home");
-          if (homeModel === void 0) {
+          if (homeModel == null) {
             return false;
           }
           homeX = homeModel.get("x");
@@ -134,12 +139,12 @@
         },
         water: function() {
           var homeModel, path;
-          this.get("workSite").trigger("worked");
           homeModel = this.get("home");
           path = this.findPath(homeModel);
           if (path.length === 0) {
             return;
           }
+          this.get("workSite").trigger("worked");
           return this.set("path", path);
         },
         canWater: function() {
@@ -149,7 +154,7 @@
             return false;
           }
           workSiteModel = this.get("workSite");
-          if (workSiteModel === void 0) {
+          if (workSiteModel == null) {
             homeModel = this.get("home");
             path = this.findPath(homeModel);
             if (path.length <= 1) {

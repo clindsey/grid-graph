@@ -97,12 +97,16 @@ define [
       canSleep: ->
         path = @get "path"
 
+        if @get("home")? is false or @get("workSite")? is false
+          if path.length is 0
+            return true
+
         if path.length isnt 0
           return false
 
         homeModel = @get "home"
 
-        if homeModel is undefined
+        unless homeModel?
           return false
 
         homeX = homeModel.get "x"
@@ -145,14 +149,14 @@ define [
         !!@get("path").length
 
       water: ->
-        @get("workSite").trigger "worked"
-
         homeModel = @get "home"
 
         path = @findPath homeModel
 
         if path.length is 0
           return
+
+        @get("workSite").trigger "worked"
 
         @set "path", path
 
@@ -164,7 +168,7 @@ define [
 
         workSiteModel = @get "workSite"
 
-        if workSiteModel is undefined
+        unless workSiteModel?
           homeModel = @get "home"
 
           path = @findPath homeModel

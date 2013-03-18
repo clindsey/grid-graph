@@ -38,7 +38,11 @@
           return setInterval(cb, time);
         };
         interval(1000 / 1, function() {
-          return creatures.invoke("trigger", "tick");
+          try {
+            return creatures.invoke("trigger", "tick");
+          } catch (err) {
+
+          }
         });
         return this;
       },
