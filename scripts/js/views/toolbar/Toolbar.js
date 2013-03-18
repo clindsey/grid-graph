@@ -65,6 +65,7 @@
           placement: "left",
           html: true
         });
+        this.onMoneyChanged();
         return this;
       },
       onDropdownItemClick: function(jqEvent) {

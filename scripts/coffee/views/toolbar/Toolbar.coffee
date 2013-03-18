@@ -70,6 +70,8 @@ define [
         placement: "left"
         html: true
 
+      @onMoneyChanged()
+
       @
 
     onDropdownItemClick: (jqEvent) ->
