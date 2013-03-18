@@ -5,7 +5,7 @@
     var Overview;
     Overview = Backbone.Model.extend({
       defaults: {
-        money: 250
+        money: 500
       },
       initialize: function() {
         return this.listenTo(buildings, "madeMoney", this.onMadeMoney);

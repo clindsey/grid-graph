@@ -6,7 +6,7 @@ define [
 
   Overview = Backbone.Model.extend
     defaults:
-      money: 250
+      money: 500
 
     initialize: ->
       @listenTo buildings, "madeMoney", @onMadeMoney
