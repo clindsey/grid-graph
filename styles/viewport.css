@@ -16,7 +16,7 @@
   color: #fff;
   text-align: center;
   text-shadow: 1px 1px 0 #000;
-  background-image: url(../images/tileset_terra.png?bust=123);
+  background-image: url(../images/tileset_terra.png?bust=240);
   cursor: pointer;
 }
 
@@ -36,4 +36,13 @@
   height: 16px;
   background-position: 0 0;
   background-image: url(../images/tileset_terra.png?bust=123);
+}
+
+.water-tile {
+  -webkit-animation: waterWaves 2s steps(2) infinite;
+}
+
+@-webkit-keyframes waterWaves {
+  from { background-position: -224px -272px; }
+  to { background-position: -256px -272px; }
 }

@@ -7,6 +7,7 @@
       tagName: "div",
       className: "map-tile",
       render: function() {
+        this.$el.removeClass("water-tile");
         this.calculateBackgroundPosition();
         this.setBackgroundPosition();
         return this;
@@ -24,6 +25,9 @@
           return this.backgroundPositionY = buildingView.backgroundPositionY;
         } else {
           type = this.model.get("type");
+          if (type === 0) {
+            this.$el.addClass("water-tile");
+          }
           this.backgroundPositionX = 0 - ((type % 16) * 16);
           return this.backgroundPositionY = 0 - (~~(type / 16) * 16);
         }
