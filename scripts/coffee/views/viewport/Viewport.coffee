@@ -90,6 +90,7 @@ define [
         try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
           creatures.invoke "trigger", "tick"
         catch err
+          console.log "machine.js state tick err:", err
 
       @
 

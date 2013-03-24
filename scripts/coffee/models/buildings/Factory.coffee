@@ -7,5 +7,7 @@ define [
   Factory = WorkableModel.extend
     defaults:
       needsWorker: true
-      cost: 60
-      value: 5
+      resources:
+        wood: 20
+        food: 10
+        metal: 20

@@ -5,8 +5,12 @@
     var Home;
     return Home = BuildingModel.extend({
       defaults: {
-        cost: 25,
-        needsWorker: false
+        needsWorker: false,
+        resources: {
+          wood: 20,
+          food: 10,
+          metal: 0
+        }
       },
       initialize: function() {
         return BuildingModel.prototype.initialize.call(this);

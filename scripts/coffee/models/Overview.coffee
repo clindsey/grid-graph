@@ -6,30 +6,50 @@ define [
 
   Overview = Backbone.Model.extend
     defaults:
-      money: 500
+      wood: 250
+      food: 100
+      metal: 0
 
     initialize: ->
-      @listenTo buildings, "madeMoney", @onMadeMoney
+      @listenTo buildings, "madeResources", @onMadeResources
 
-    onMadeMoney: (amount) ->
-      money = @get "money"
+    onMadeResources: (resources) ->
+      woodCount = @get "wood"
+      woodCount += resources.wood
+      @set "wood", woodCount
 
-      money += amount
+      foodCount = @get "food"
+      foodCount += resources.food
+      @set "food", foodCount
 
-      @set "money", money
+      metalCount = @get "metal"
+      metalCount += resources.metal
+      @set "metal", metalCount
 
-    removeMoney: (amount) ->
-      money = @get "money"
+    removeResources: (resources) ->
+      woodCount = @get "wood"
+      woodCount -= resources.wood
+      @set "wood", woodCount
 
-      money -= amount
+      foodCount = @get "food"
+      foodCount -= resources.food
+      @set "food", foodCount
 
-      @set "money", money
+      metalCount = @get "metal"
+      metalCount -= resources.metal
+      @set "metal", metalCount
 
-    purchase: (amount) ->
-      if @get("money") < amount
+    purchase: (resources) ->
+      if @get("wood") < resources.wood
         return false
 
-      @removeMoney amount
+      if @get("food") < resources.food
+        return false
+
+      if @get("metal") < resources.metal
+        return false
+
+      @removeResources resources
 
       true
 

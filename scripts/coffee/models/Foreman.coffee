@@ -49,7 +49,7 @@ define [
 
       roadModel = new RoadModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase roadModel.get "cost"
+      unless overview.purchase roadModel.get "resources"
         return
 
       buildings.add roadModel
@@ -64,7 +64,7 @@ define [
 
       farmModel = new FarmModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase farmModel.get "cost"
+      unless overview.purchase farmModel.get "resources"
         return
 
       buildings.add farmModel
@@ -79,7 +79,7 @@ define [
 
       homeModel = new HomeModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase homeModel.get "cost"
+      unless overview.purchase homeModel.get "resources"
         return
 
       buildings.add homeModel
@@ -102,7 +102,7 @@ define [
 
       mineModel = new MineModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase mineModel.get "cost"
+      unless overview.purchase mineModel.get "resources"
         return
 
       buildings.add mineModel
@@ -117,7 +117,7 @@ define [
 
       lumberMillModel = new LumberMillModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase lumberMillModel.get "cost"
+      unless overview.purchase lumberMillModel.get "resources"
         return
 
       buildings.add lumberMillModel
@@ -132,7 +132,7 @@ define [
 
       waterWellModel = new WaterWellModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase waterWellModel.get "cost"
+      unless overview.purchase waterWellModel.get "resources"
         return
 
       buildings.add waterWellModel
@@ -147,7 +147,7 @@ define [
 
       factoryModel = new FactoryModel tileModel: tileModel, x: x, y: y
 
-      unless overview.purchase factoryModel.get "cost"
+      unless overview.purchase factoryModel.get "resources"
         return
 
       buildings.add factoryModel

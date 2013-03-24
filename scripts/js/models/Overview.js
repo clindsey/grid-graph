@@ -5,28 +5,48 @@
     var Overview;
     Overview = Backbone.Model.extend({
       defaults: {
-        money: 500
+        wood: 250,
+        food: 100,
+        metal: 0
       },
       initialize: function() {
-        return this.listenTo(buildings, "madeMoney", this.onMadeMoney);
+        return this.listenTo(buildings, "madeResources", this.onMadeResources);
       },
-      onMadeMoney: function(amount) {
-        var money;
-        money = this.get("money");
-        money += amount;
-        return this.set("money", money);
+      onMadeResources: function(resources) {
+        var foodCount, metalCount, woodCount;
+        woodCount = this.get("wood");
+        woodCount += resources.wood;
+        this.set("wood", woodCount);
+        foodCount = this.get("food");
+        foodCount += resources.food;
+        this.set("food", foodCount);
+        metalCount = this.get("metal");
+        metalCount += resources.metal;
+        return this.set("metal", metalCount);
       },
-      removeMoney: function(amount) {
-        var money;
-        money = this.get("money");
-        money -= amount;
-        return this.set("money", money);
+      removeResources: function(resources) {
+        var foodCount, metalCount, woodCount;
+        woodCount = this.get("wood");
+        woodCount -= resources.wood;
+        this.set("wood", woodCount);
+        foodCount = this.get("food");
+        foodCount -= resources.food;
+        this.set("food", foodCount);
+        metalCount = this.get("metal");
+        metalCount -= resources.metal;
+        return this.set("metal", metalCount);
       },
-      purchase: function(amount) {
-        if (this.get("money") < amount) {
+      purchase: function(resources) {
+        if (this.get("wood") < resources.wood) {
           return false;
         }
-        this.removeMoney(amount);
+        if (this.get("food") < resources.food) {
+          return false;
+        }
+        if (this.get("metal") < resources.metal) {
+          return false;
+        }
+        this.removeResources(resources);
         return true;
       }
     });

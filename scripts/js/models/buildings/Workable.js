@@ -6,15 +6,23 @@
     return Workable = BuildingModel.extend({
       defaults: {
         needsWorker: true,
-        cost: 0,
-        value: 0
+        production: {
+          wood: 0,
+          food: 0,
+          metal: 0
+        },
+        resources: {
+          wood: 0,
+          food: 0,
+          metal: 0
+        }
       },
       initialize: function() {
         BuildingModel.prototype.initialize.call(this);
         return this.listenTo(this, "worked", this.onWorked);
       },
       onWorked: function() {
-        return this.trigger("madeMoney", this.get("value"));
+        return this.trigger("madeResources", this.get("production"));
       }
     });
   });

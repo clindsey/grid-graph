@@ -6,8 +6,11 @@ define [
 
   Road = BuildingModel.extend
     defaults:
-      cost: 5
       needsWorker: false
+      resources:
+        wood: 5
+        food: 0
+        metal: 0
 
     initialize: ->
       BuildingModel.prototype.initialize.call @

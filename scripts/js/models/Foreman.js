@@ -25,7 +25,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(roadModel.get("cost"))) {
+        if (!overview.purchase(roadModel.get("resources"))) {
           return;
         }
         buildings.add(roadModel);
@@ -41,7 +41,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(farmModel.get("cost"))) {
+        if (!overview.purchase(farmModel.get("resources"))) {
           return;
         }
         buildings.add(farmModel);
@@ -57,7 +57,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(homeModel.get("cost"))) {
+        if (!overview.purchase(homeModel.get("resources"))) {
           return;
         }
         buildings.add(homeModel);
@@ -80,7 +80,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(mineModel.get("cost"))) {
+        if (!overview.purchase(mineModel.get("resources"))) {
           return;
         }
         buildings.add(mineModel);
@@ -96,7 +96,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(lumberMillModel.get("cost"))) {
+        if (!overview.purchase(lumberMillModel.get("resources"))) {
           return;
         }
         buildings.add(lumberMillModel);
@@ -112,7 +112,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(waterWellModel.get("cost"))) {
+        if (!overview.purchase(waterWellModel.get("resources"))) {
           return;
         }
         buildings.add(waterWellModel);
@@ -128,7 +128,7 @@
           x: x,
           y: y
         });
-        if (!overview.purchase(factoryModel.get("cost"))) {
+        if (!overview.purchase(factoryModel.get("resources"))) {
           return;
         }
         buildings.add(factoryModel);

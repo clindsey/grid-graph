@@ -41,7 +41,7 @@
           try {
             return creatures.invoke("trigger", "tick");
           } catch (err) {
-
+            return console.log("machine.js state tick err:", err);
           }
         });
         return this;
