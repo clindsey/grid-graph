@@ -2,16 +2,21 @@ define [
       "models/heightmap/HeightmapChunk"
       "models/MapTile"
       "collections/MapTiles"
+      "collections/Planets"
       "Alea"
       "Backbone"
     ], (
       HeightmapChunkModel,
       MapTileModel,
-      mapTiles) ->
+      mapTiles,
+      planets) ->
 
   Heightmap = Backbone.Model.extend
     initialize: ->
-      @set "SEED", +new Date
+      @listenTo planets, "active", @generateData
+
+    generateData: (activePlanet) ->
+      @set "SEED", activePlanet.get "seed"
 
       worldChunkWidth = 8
       worldChunkHeight = 8

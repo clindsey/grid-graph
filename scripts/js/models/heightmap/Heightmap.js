@@ -1,11 +1,14 @@
 (function() {
 
-  define(["models/heightmap/HeightmapChunk", "models/MapTile", "collections/MapTiles", "Alea", "Backbone"], function(HeightmapChunkModel, MapTileModel, mapTiles) {
+  define(["models/heightmap/HeightmapChunk", "models/MapTile", "collections/MapTiles", "collections/Planets", "Alea", "Backbone"], function(HeightmapChunkModel, MapTileModel, mapTiles, planets) {
     var Heightmap;
     Heightmap = Backbone.Model.extend({
       initialize: function() {
+        return this.listenTo(planets, "active", this.generateData);
+      },
+      generateData: function(activePlanet) {
         var chunkHeight, chunkWidth, chunks, heightmap, maxElevation, worldChunkHeight, worldChunkWidth;
-        this.set("SEED", +(new Date));
+        this.set("SEED", activePlanet.get("seed"));
         worldChunkWidth = 8;
         worldChunkHeight = 8;
         chunkWidth = 9;

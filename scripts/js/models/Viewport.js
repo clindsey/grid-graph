@@ -12,7 +12,7 @@
       initialize: function() {
         this.listenTo(this, "change:x", this.updateTiles);
         this.listenTo(this, "change:y", this.updateTiles);
-        return this.updateTiles();
+        return this.listenTo(heightmapModel, "change:data", this.updateTiles);
       },
       updateTiles: function() {
         var tile, tileRow, viewportX, viewportY, _i, _j, _len, _len1, _ref;

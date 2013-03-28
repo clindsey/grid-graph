@@ -17,7 +17,7 @@ define [
       @listenTo @, "change:x", @updateTiles
       @listenTo @, "change:y", @updateTiles
 
-      @updateTiles()
+      @listenTo heightmapModel, "change:data", @updateTiles
 
     updateTiles: ->
       viewportX = heightmapModel.clampX @get "x"
