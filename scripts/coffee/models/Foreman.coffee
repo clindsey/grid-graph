@@ -1,7 +1,6 @@
 define [
       "collections/Creatures"
       "models/heightmap/Heightmap"
-      "collections/MapTiles"
       "models/entities/Creature"
       "collections/Buildings"
       "models/buildings/Farm"
@@ -16,7 +15,6 @@ define [
     ], (
       creatures,
       heightmapModel,
-      mapTiles,
       CreatureModel,
       buildings,
       FarmModel,
@@ -47,12 +45,14 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      roadModel = new RoadModel tileModel: tileModel, x: x, y: y
+      roadModel = new RoadModel x: x, y: y
 
       unless overview.purchase roadModel.get "resources"
         return
 
       buildings.add roadModel
+
+      buildings.sync 'create', roadModel
 
       @informNeighbors tileModel
 
@@ -62,7 +62,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      farmModel = new FarmModel tileModel: tileModel, x: x, y: y
+      farmModel = new FarmModel x: x, y: y
 
       unless overview.purchase farmModel.get "resources"
         return
@@ -77,7 +77,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      homeModel = new HomeModel tileModel: tileModel, x: x, y: y
+      homeModel = new HomeModel x: x, y: y
 
       unless overview.purchase homeModel.get "resources"
         return
@@ -100,7 +100,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      mineModel = new MineModel tileModel: tileModel, x: x, y: y
+      mineModel = new MineModel x: x, y: y
 
       unless overview.purchase mineModel.get "resources"
         return
@@ -115,7 +115,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      lumberMillModel = new LumberMillModel tileModel: tileModel, x: x, y: y
+      lumberMillModel = new LumberMillModel x: x, y: y
 
       unless overview.purchase lumberMillModel.get "resources"
         return
@@ -130,7 +130,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      waterWellModel = new WaterWellModel tileModel: tileModel, x: x, y: y
+      waterWellModel = new WaterWellModel x: x, y: y
 
       unless overview.purchase waterWellModel.get "resources"
         return
@@ -145,7 +145,7 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      factoryModel = new FactoryModel tileModel: tileModel, x: x, y: y
+      factoryModel = new FactoryModel x: x, y: y
 
       unless overview.purchase factoryModel.get "resources"
         return
@@ -229,7 +229,9 @@ define [
 
       neighboringTiles = heightmapModel.getNeighboringTiles x, y
 
+      ###
       _.each neighboringTiles, (neighboringTile) ->
         neighboringTile.trigger "neighborChanged"
+      ###
 
   new Foreman

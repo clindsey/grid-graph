@@ -6,6 +6,7 @@ define [
 
   Factory = WorkableModel.extend
     defaults:
+      type: "Factory"
       needsWorker: true
       resources:
         wood: 20

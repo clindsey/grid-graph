@@ -17,12 +17,12 @@ define [
       @listenTo planets, "reset", @render
 
     render: ->
-      @$("ul").html @template {}
+      @$el.html @template {}
 
       planets.each (planet) =>
         planetListItemView = new PlanetListItemView
           model: planet
 
-        @$el.append planetListItemView.render().$el
+        @$("ul").append planetListItemView.render().$el
 
       @

@@ -9,7 +9,7 @@ define [
     backgroundPositionY: -256
 
     initialize: ->
-      @listenTo @model.get("tileModel"), "neighborChanged", @onNeighborChanged
+      #@listenTo @model.get("tileModel"), "neighborChanged", @onNeighborChanged
 
       roadTileType = @calculateRoadTile()
 

@@ -13,7 +13,8 @@
         this.listenTo(viewportModel, "moved", this.onViewportMoved);
         this.listenTo(creatures, "add", this.onCreatureAdded);
         this.listenTo(buildings, "add", this.onBuildingAdded);
-        return this.listenTo(buildings, "remove", this.onBuildingRemoved);
+        this.listenTo(buildings, "remove", this.onBuildingRemoved);
+        return this.listenTo(buildings, "reset", this.onBuildingsReset);
       },
       render: function() {
         var interval,
@@ -131,38 +132,52 @@
           return creatureModel.set("workSite", void 0);
         }
       },
+      onBuildingsReset: function() {
+        var _this = this;
+        return buildings.each(function(building) {
+          return _this.onBuildingAdded(building);
+        });
+      },
       onBuildingAdded: function(buildingModel) {
         var buildingView, tileModel, tileModels;
-        if (buildingModel instanceof HomeModel) {
-          buildingView = new HomeView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof FarmModel) {
-          buildingView = new FarmView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof RoadModel) {
-          buildingView = new RoadView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof MineModel) {
-          buildingView = new MineView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof LumberMillModel) {
-          buildingView = new LumberMillView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof WaterWellModel) {
-          buildingView = new WaterWellView({
-            model: buildingModel
-          });
-        } else if (buildingModel instanceof FactoryModel) {
-          buildingView = new FactoryView({
-            model: buildingModel
-          });
-        } else {
-          return;
+        switch (buildingModel.get("type")) {
+          case "Home":
+            buildingView = new HomeView({
+              model: buildingModel
+            });
+            break;
+          case "Farm":
+            buildingView = new FarmView({
+              model: buildingModel
+            });
+            break;
+          case "Road":
+            buildingView = new RoadView({
+              model: buildingModel
+            });
+            break;
+          case "Mine":
+            buildingView = new MineView({
+              model: buildingModel
+            });
+            break;
+          case "LumberMill":
+            buildingView = new LumberMillView({
+              model: buildingModel
+            });
+            break;
+          case "WaterWell":
+            buildingView = new WaterWellView({
+              model: buildingModel
+            });
+            break;
+          case "Factory":
+            buildingView = new FactoryView({
+              model: buildingModel
+            });
+            break;
+          default:
+            return;
         }
         tileModels = mapTiles.where({
           x: buildingModel.get("x"),

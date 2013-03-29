@@ -6,6 +6,7 @@ define [
 
   Mine = WorkableModel.extend
     defaults:
+      type: "Mine"
       needsWorker: true
       resources:
         wood: 20

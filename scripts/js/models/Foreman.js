@@ -1,6 +1,6 @@
 (function() {
 
-  define(["collections/Creatures", "models/heightmap/Heightmap", "collections/MapTiles", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, mapTiles, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
+  define(["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
     var Foreman;
     Foreman = Backbone.Model.extend({
       removeBuilding: function(tileModel) {
@@ -20,7 +20,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         roadModel = new RoadModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -28,6 +27,7 @@
           return;
         }
         buildings.add(roadModel);
+        buildings.sync('create', roadModel);
         this.informNeighbors(tileModel);
         return this.assignIdleWorkers();
       },
@@ -36,7 +36,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         farmModel = new FarmModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -52,7 +51,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         homeModel = new HomeModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -75,7 +73,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         mineModel = new MineModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -91,7 +88,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         lumberMillModel = new LumberMillModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -107,7 +103,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         waterWellModel = new WaterWellModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -123,7 +118,6 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         factoryModel = new FactoryModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
@@ -211,10 +205,12 @@
         var neighboringTiles, x, y;
         x = tileModel.get("x");
         y = tileModel.get("y");
-        neighboringTiles = heightmapModel.getNeighboringTiles(x, y);
-        return _.each(neighboringTiles, function(neighboringTile) {
-          return neighboringTile.trigger("neighborChanged");
-        });
+        return neighboringTiles = heightmapModel.getNeighboringTiles(x, y);
+        /*
+        _.each neighboringTiles, (neighboringTile) ->
+          neighboringTile.trigger "neighborChanged"
+        */
+
       }
     });
     return new Foreman;

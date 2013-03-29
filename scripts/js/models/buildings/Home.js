@@ -4,6 +4,7 @@
     var Home;
     return Home = BuildingModel.extend({
       defaults: {
+        type: "Home",
         needsWorker: false,
         resources: {
           wood: 20,

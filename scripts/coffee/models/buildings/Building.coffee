@@ -5,6 +5,7 @@ define [
 
   Building = Backbone.Model.extend
     defaults:
+      type: "Building"
       needsWorker: false
       resources:
         wood: 0

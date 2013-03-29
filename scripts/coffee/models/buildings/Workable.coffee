@@ -6,6 +6,7 @@ define [
 
   Workable = BuildingModel.extend
     defaults:
+      type: "Workable"
       needsWorker: true
       production:
         wood: 0

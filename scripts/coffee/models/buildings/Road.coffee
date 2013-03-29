@@ -6,6 +6,7 @@ define [
 
   Road = BuildingModel.extend
     defaults:
+      type: "Road"
       needsWorker: false
       resources:
         wood: 5

@@ -4,6 +4,7 @@
     var Farm;
     return Farm = WorkableModel.extend({
       defaults: {
+        type: "Farm",
         needsWorker: true,
         stage: 0,
         resources: {

@@ -10,13 +10,13 @@
       },
       render: function() {
         var _this = this;
-        this.$("ul").html(this.template({}));
+        this.$el.html(this.template({}));
         planets.each(function(planet) {
           var planetListItemView;
           planetListItemView = new PlanetListItemView({
             model: planet
           });
-          return _this.$el.append(planetListItemView.render().$el);
+          return _this.$("ul").append(planetListItemView.render().$el);
         });
         return this;
       }

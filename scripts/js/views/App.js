@@ -1,6 +1,6 @@
 (function() {
 
-  define(["views/viewport/Viewport", "models/Viewport", "views/toolbar/Toolbar", "models/heightmap/Heightmap", "models/Galaxy", "views/planetList/PlanetList", "collections/Planets", "Alea", "Backbone"], function(ViewportView, viewportModel, ToolbarView, heightmapModel, GalaxyModel, PlanetListView, planets) {
+  define(["views/viewport/Viewport", "models/Viewport", "views/toolbar/Toolbar", "models/heightmap/Heightmap", "models/Galaxy", "views/planetList/PlanetList", "collections/Planets", "collections/Buildings", "Alea", "Backbone"], function(ViewportView, viewportModel, ToolbarView, heightmapModel, GalaxyModel, PlanetListView, planets, buildings) {
     var AppView;
     return AppView = Backbone.View.extend({
       el: document,
@@ -9,13 +9,14 @@
         toolbarView = new ToolbarView;
         galaxy = new GalaxyModel({
           seed: 20130910,
-          size: 20
+          size: 1
         });
         new PlanetListView;
         galaxy.generate();
-        return new ViewportView({
+        new ViewportView({
           toolbarView: toolbarView
         });
+        return buildings.fetch();
       }
     });
   });

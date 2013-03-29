@@ -6,6 +6,7 @@ define [
 
   LumberMill = WorkableModel.extend
     defaults:
+      type: "LumberMill"
       needsWorker: true
       resources:
         wood: 0

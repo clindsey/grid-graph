@@ -7,7 +7,6 @@
       backgroundPositionY: -256,
       initialize: function() {
         var roadTileType;
-        this.listenTo(this.model.get("tileModel"), "neighborChanged", this.onNeighborChanged);
         roadTileType = this.calculateRoadTile();
         return this.backgroundPositionX = 0 - roadTileType * 16;
       },

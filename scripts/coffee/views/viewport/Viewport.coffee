@@ -65,6 +65,7 @@ define [
       @listenTo creatures, "add", @onCreatureAdded
       @listenTo buildings, "add", @onBuildingAdded
       @listenTo buildings, "remove", @onBuildingRemoved
+      @listenTo buildings, "reset", @onBuildingsReset
 
     render: ->
       @$el.css
@@ -187,30 +188,28 @@ define [
       if creatureModel?
         creatureModel.set "workSite", undefined
 
+    onBuildingsReset: ->
+      buildings.each (building) =>
+        @onBuildingAdded building
+
     onBuildingAdded: (buildingModel) ->
-      if buildingModel instanceof HomeModel
-        buildingView = new HomeView model: buildingModel
-
-      else if buildingModel instanceof FarmModel
-        buildingView = new FarmView model: buildingModel
-
-      else if buildingModel instanceof RoadModel
-        buildingView = new RoadView model: buildingModel
-
-      else if buildingModel instanceof MineModel
-        buildingView = new MineView model: buildingModel
-
-      else if buildingModel instanceof LumberMillModel
-        buildingView = new LumberMillView model: buildingModel
-
-      else if buildingModel instanceof WaterWellModel
-        buildingView = new WaterWellView model: buildingModel
-
-      else if buildingModel instanceof FactoryModel
-        buildingView = new FactoryView model: buildingModel
-
-      else
-        return
+      switch buildingModel.get "type"
+        when "Home"
+          buildingView = new HomeView model: buildingModel
+        when "Farm"
+          buildingView = new FarmView model: buildingModel
+        when "Road"
+          buildingView = new RoadView model: buildingModel
+        when "Mine"
+          buildingView = new MineView model: buildingModel
+        when "LumberMill"
+          buildingView = new LumberMillView model: buildingModel
+        when "WaterWell"
+          buildingView = new WaterWellView model: buildingModel
+        when "Factory"
+          buildingView = new FactoryView model: buildingModel
+        else
+          return
 
       tileModels = mapTiles.where
         x: buildingModel.get "x"
