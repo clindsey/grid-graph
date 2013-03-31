@@ -1,6 +1,6 @@
 (function() {
 
-  define(["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles) {
+  define(["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "models/Overview", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles, overview) {
     var ViewportView;
     return ViewportView = Backbone.View.extend({
       el: ".map-viewport",
@@ -14,7 +14,8 @@
         this.listenTo(creatures, "add", this.onCreatureAdded);
         this.listenTo(buildings, "add", this.onBuildingAdded);
         this.listenTo(buildings, "remove", this.onBuildingRemoved);
-        return this.listenTo(buildings, "reset", this.onBuildingsReset);
+        this.listenTo(buildings, "reset", this.onBuildingsReset);
+        return this.listenTo(creatures, "reset", this.onCreaturesReset);
       },
       render: function() {
         var interval,
@@ -119,27 +120,86 @@
         });
         tileModel = _.first(tileModels);
         tileModel.set("buildingView", void 0);
-        creatureModel = buildingModel.get("creature");
+        creatureModel = _.first(creatures.where({
+          id: buildingModel.get("creatureFk")
+        }));
         if (creatureModel != null) {
+          creatures.sync("delete", creatureModel);
           creatures.remove(creatureModel);
-          workSite = creatureModel.get("workSite");
+          workSite = _.first(buildings.where({
+            id: creatureModel.get("workSiteFk")
+          }));
           if (workSite != null) {
-            workSite.set("worker", void 0);
+            workSite.set("workerFk", void 0);
+            buildings.sync("update", workSite);
           }
         }
-        creatureModel = buildingModel.get("worker");
+        creatureModel = _.first(creatures.where({
+          id: buildingModel.get("workerFk")
+        }));
         if (creatureModel != null) {
-          return creatureModel.set("workSite", void 0);
+          creatureModel.set("workSiteFk", void 0);
+          return creatures.sync("update", creatureModel);
         }
       },
-      onBuildingsReset: function() {
+      onCreaturesReset: function() {
         var _this = this;
-        return buildings.each(function(building) {
-          return _this.onBuildingAdded(building);
+        return creatures.each(function(creature) {
+          _this.onCreatureAdded(creature);
+          return creature.state.warp(creature.get("stateIdentifier"));
+        });
+      },
+      onBuildingsReset: function() {
+        var models,
+          _this = this;
+        models = [];
+        _.each(buildings.toArray(), function(buildingModel) {
+          var model;
+          buildings.remove(buildingModel, {
+            silent: true
+          });
+          switch (buildingModel.get("type")) {
+            case "Home":
+              model = new HomeModel(buildingModel.attributes);
+              break;
+            case "Farm":
+              model = new FarmModel(buildingModel.attributes);
+              break;
+            case "Road":
+              model = new RoadModel(buildingModel.attributes);
+              break;
+            case "Mine":
+              model = new MineModel(buildingModel.attributes);
+              break;
+            case "LumberMill":
+              model = new LumberMillModel(buildingModel.attributes);
+              break;
+            case "WaterWell":
+              model = new WaterWellModel(buildingModel.attributes);
+              break;
+            case "Factory":
+              model = new FactoryModel(buildingModel.attributes);
+              break;
+            default:
+              return;
+          }
+          return models.push(model);
+        });
+        buildings.reset([], {
+          silent: true
+        });
+        buildings.reset(models, {
+          silent: true
+        });
+        buildings.each(function(buildingModel) {
+          return _this.onBuildingAdded(buildingModel);
+        });
+        return buildings.each(function(buildingModel) {
+          return foremanModel.informNeighbors(buildingModel);
         });
       },
       onBuildingAdded: function(buildingModel) {
-        var buildingView, tileModel, tileModels;
+        var buildingView, tileModel;
         switch (buildingModel.get("type")) {
           case "Home":
             buildingView = new HomeView({
@@ -179,11 +239,11 @@
           default:
             return;
         }
-        tileModels = mapTiles.where({
+        buildingModel.trigger("calculateBackgroundPosition");
+        tileModel = _.first(mapTiles.where({
           x: buildingModel.get("x"),
           y: buildingModel.get("y")
-        });
-        tileModel = _.first(tileModels);
+        }));
         return tileModel.set("buildingView", buildingView);
       }
     });

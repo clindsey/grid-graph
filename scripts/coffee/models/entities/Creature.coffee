@@ -1,29 +1,43 @@
 define [
       "models/entities/Entity"
       "models/heightmap/Heightmap"
+      "collections/Buildings"
       "AStar"
       "Machine"
       "Backbone"
     ], (
       EntityModel,
       heightmapModel,
+      buildings,
       AStar) ->
 
   Creature = EntityModel.extend
     defaults:
       path: []
-      workSite: undefined
-      home: undefined
+      workSiteFk: undefined
+      homeFk: undefined
 
     initialize: ->
       machine = new Machine
 
       @set "direction", "south"
 
-      @set "state", machine.generateTree @behaviorTree, @, @states
+      @state = machine.generateTree @behaviorTree, @, @states
+      @set "stateIdentifier", @state.identifier
 
       @listenTo @, "tick", =>
-        @set "state", @get("state").tick()
+        @state = @state.tick()
+        @set "stateIdentifier", @state.identifier
+
+        @collection.sync "update", @
+
+    getWorkSite: ->
+      _.first buildings.where
+        id: @get "workSiteFk"
+
+    getHomeSite: ->
+      _.first buildings.where
+        id: @get "homeFk"
 
     findPath: (tileModel) ->
       x = @get "x"
@@ -82,7 +96,7 @@ define [
 
     states:
       sleep: ->
-        workSiteModel = @get "workSite"
+        workSiteModel = @getWorkSite()
 
         unless workSiteModel?
           return
@@ -97,14 +111,16 @@ define [
       canSleep: ->
         path = @get "path"
 
-        if @get("home")? is false or @get("workSite")? is false
+        workSiteModel = @getWorkSite()
+
+        if @get("home")? is false or workSiteModel? is false
           if path.length is 0
             return true
 
         if path.length isnt 0
           return false
 
-        homeModel = @get "home"
+        homeModel = @getHomeSite()
 
         unless homeModel?
           return false
@@ -149,14 +165,18 @@ define [
         !!@get("path").length
 
       water: ->
-        homeModel = @get "home"
+        homeModel = @getHomeSite()
 
         path = @findPath homeModel
 
         if path.length is 0
           return
 
-        @get("workSite").trigger "worked"
+        workSite = @getWorkSite()
+
+        workSite.trigger "worked"
+
+        buildings.sync "update", workSite
 
         @set "path", path
 
@@ -166,10 +186,10 @@ define [
         if path.length isnt 0
           return false
 
-        workSiteModel = @get "workSite"
+        workSiteModel = @getWorkSite()
 
         unless workSiteModel?
-          homeModel = @get "home"
+          homeModel = @getHomeSite()
 
           path = @findPath homeModel
 

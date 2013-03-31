@@ -1,10 +1,10 @@
 (function() {
 
-  define(["models/entities/Creature", "Backbone"], function(CreatureModel) {
+  define(["models/entities/Creature", "Backbone", "localstorage"], function(CreatureModel) {
     var Creatures;
     Creatures = Backbone.Collection.extend({
       model: CreatureModel,
-      initialize: function() {}
+      localStorage: new Backbone.LocalStorage("Creatures")
     });
     return new Creatures;
   });

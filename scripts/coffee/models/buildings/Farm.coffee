@@ -1,8 +1,10 @@
 define [
       "models/buildings/Workable"
+      "collections/ViewportTiles"
       "Backbone"
     ], (
-      WorkableModel) ->
+      WorkableModel,
+      viewportTiles) ->
 
   Farm = WorkableModel.extend
     defaults:
@@ -28,4 +30,8 @@ define [
 
       @trigger "calculateBackgroundPosition"
 
-      @get("tileModel").trigger "updateBackgroundPosition"
+      mapTile = _.first viewportTiles.where
+        x: @get "x"
+        y: @get "y"
+
+      mapTile.trigger("updateBackgroundPosition") if mapTile?

@@ -6,16 +6,16 @@
       className: "creature-tile entity-tile",
       initialize: function() {
         EntityView.prototype.initialize.call(this);
-        this.listenTo(this.model, "change:state", this.onStateChange);
+        this.listenTo(this.model, "change:stateIdentifier", this.onStateChange);
         this.listenTo(this.model, "change:direction", this.onDirectionChange);
         this.listenTo(this.model, "step", this.onStep);
-        this.currentState = this.model.get("state").identifer;
+        this.currentState = this.model.get("stateIdentifier");
         this.currentDirection = this.model.get("direction");
         return this.setClassName;
       },
       onStateChange: function() {
         this.removeClassName();
-        this.currentState = this.model.get("state").identifier;
+        this.currentState = this.model.get("stateIdentifier");
         return this.setClassName();
       },
       onDirectionChange: function() {

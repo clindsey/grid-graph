@@ -37,9 +37,13 @@ define [
 
       buildingModel = _.first foundBuildings
 
-      buildings.remove buildingModel
+      tileModel.set "isOccupied", false
 
-      @informNeighbors tileModel
+      @informNeighbors buildingModel
+
+      buildings.sync "delete", buildingModel
+
+      buildings.remove buildingModel
 
     putRoad: (tileModel) ->
       x = tileModel.get "x"
@@ -47,16 +51,20 @@ define [
 
       roadModel = new RoadModel x: x, y: y
 
+      ###
       unless overview.purchase roadModel.get "resources"
         return
+      ###
 
       buildings.add roadModel
 
-      buildings.sync 'create', roadModel
+      @assignIdleWorkers()
+
+      buildings.sync "create", roadModel
+
+      tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
-
-      @assignIdleWorkers()
 
     putFarm: (tileModel) ->
       x = tileModel.get "x"
@@ -64,10 +72,16 @@ define [
 
       farmModel = new FarmModel x: x, y: y
 
+      ###
       unless overview.purchase farmModel.get "resources"
         return
+      ###
 
       buildings.add farmModel
+
+      tileModel.set "isOccupied", true
+
+      buildings.sync "create", farmModel
 
       @informNeighbors tileModel
 
@@ -79,10 +93,16 @@ define [
 
       homeModel = new HomeModel x: x, y: y
 
+      ###
       unless overview.purchase homeModel.get "resources"
         return
+      ###
 
       buildings.add homeModel
+
+      buildings.sync "create", homeModel
+
+      tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
 
@@ -90,9 +110,11 @@ define [
 
       creatures.add creatureModel
 
-      creatureModel.set "home", homeModel
+      creatureModel.set "homeFk", homeModel.get "id"
 
-      homeModel.set "creature", creatureModel
+      creatures.sync "create", creatureModel
+
+      homeModel.set "creatureFk", creatureModel.get "id"
 
       @findJob creatureModel
 
@@ -102,10 +124,16 @@ define [
 
       mineModel = new MineModel x: x, y: y
 
+      ###
       unless overview.purchase mineModel.get "resources"
         return
+      ###
 
       buildings.add mineModel
+
+      tileModel.set "isOccupied", true
+
+      buildings.sync "create", mineModel
 
       @informNeighbors tileModel
 
@@ -117,10 +145,16 @@ define [
 
       lumberMillModel = new LumberMillModel x: x, y: y
 
+      ###
       unless overview.purchase lumberMillModel.get "resources"
         return
+      ###
 
       buildings.add lumberMillModel
+
+      tileModel.set "isOccupied", true
+
+      buildings.sync "create", lumberMillModel
 
       @informNeighbors tileModel
 
@@ -132,10 +166,14 @@ define [
 
       waterWellModel = new WaterWellModel x: x, y: y
 
+      ###
       unless overview.purchase waterWellModel.get "resources"
         return
+      ###
 
       buildings.add waterWellModel
+
+      tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
 
@@ -147,24 +185,31 @@ define [
 
       factoryModel = new FactoryModel x: x, y: y
 
+      ###
       unless overview.purchase factoryModel.get "resources"
         return
+      ###
 
       buildings.add factoryModel
+
+      tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
 
       @findWorker factoryModel
 
     assignWorkerToSite: (unemployedCreature, workSiteModel) ->
-      unemployedCreature.set "workSite", workSiteModel
+      unemployedCreature.set "workSiteFk", workSiteModel.get "id"
 
-      workSiteModel.set "worker", unemployedCreature
+      workSiteModel.set "workerFk", unemployedCreature.get "id"
+
+      creatures.sync "update", unemployedCreature
+      buildings.sync "update", workSiteModel
 
     findJob: (unemployedCreature) ->
       availableJobs = buildings.where
         needsWorker: true
-        worker: undefined
+        workerFk: undefined
 
       if availableJobs.length is 0
         return
@@ -181,7 +226,7 @@ define [
 
     assignIdleWorkers: ->
       unemployedCreatures = creatures.where
-        workSite: undefined
+        workSiteFk: undefined
 
       if unemployedCreatures.length is 0
         return
@@ -189,7 +234,7 @@ define [
       _.some unemployedCreatures, (unemployedCreature) =>
         availableJobs = buildings.where
           needsWorker: true
-          worker: undefined
+          workerFk: undefined
 
         if availableJobs.length is 0
           return true
@@ -208,7 +253,7 @@ define [
 
     findWorker: (workSiteModel) ->
       unemployedCreatures = creatures.where
-        workSite: undefined
+        workSiteFk: undefined
 
       if unemployedCreatures.length is 0
         return
@@ -223,15 +268,18 @@ define [
 
         true
 
-    informNeighbors: (tileModel) ->
-      x = tileModel.get "x"
-      y = tileModel.get "y"
+    informNeighbors: (buildingModel) ->
+      x = buildingModel.get "x"
+      y = buildingModel.get "y"
 
       neighboringTiles = heightmapModel.getNeighboringTiles x, y
 
-      ###
       _.each neighboringTiles, (neighboringTile) ->
         neighboringTile.trigger "neighborChanged"
-      ###
+        buildingModel = _.first buildings.where
+          x: neighboringTile.get "x"
+          y: neighboringTile.get "y"
+
+        buildingModel.trigger("neighborChanged") if buildingModel?
 
   new Foreman

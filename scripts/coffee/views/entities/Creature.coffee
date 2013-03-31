@@ -11,11 +11,11 @@ define [
     initialize: ->
       EntityView.prototype.initialize.call @
 
-      @listenTo @model, "change:state", @onStateChange
+      @listenTo @model, "change:stateIdentifier", @onStateChange
       @listenTo @model, "change:direction", @onDirectionChange
       @listenTo @model, "step", @onStep
 
-      @currentState = @model.get("state").identifer
+      @currentState = @model.get "stateIdentifier"
       @currentDirection = @model.get "direction"
 
       @setClassName
@@ -23,7 +23,7 @@ define [
     onStateChange: ->
       @removeClassName()
 
-      @currentState = @model.get("state").identifier
+      @currentState = @model.get "stateIdentifier"
 
       @setClassName()
 

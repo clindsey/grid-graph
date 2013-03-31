@@ -7,6 +7,7 @@ define [
       "views/planetList/PlanetList"
       "collections/Planets"
       "collections/Buildings"
+      "collections/Creatures"
       "Alea"
       "Backbone"
     ], (
@@ -17,7 +18,8 @@ define [
       GalaxyModel,
       PlanetListView,
       planets,
-      buildings) ->
+      buildings,
+      creatures) ->
 
   AppView = Backbone.View.extend
     el: document
@@ -26,7 +28,7 @@ define [
       toolbarView = new ToolbarView
 
       galaxy = new GalaxyModel
-        seed: 20130910
+        seed: 20130330
         size: 1
 
       new PlanetListView
@@ -35,5 +37,8 @@ define [
 
       new ViewportView
         toolbarView: toolbarView
+
+      @listenTo buildings, "reset", ->
+        creatures.fetch()
 
       buildings.fetch()

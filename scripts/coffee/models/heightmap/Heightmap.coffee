@@ -69,10 +69,10 @@ define [
 
             s = a + b + c + d + e + f + g + h
 
-          mapTileModel = new MapTileModel(
+          mapTileModel = new MapTileModel
               type: s
               x: x
-              y: y)
+              y: y
 
           data[y][x] = mapTileModel
 

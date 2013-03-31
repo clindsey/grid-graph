@@ -1,6 +1,6 @@
 (function() {
 
-  define(["models/buildings/Workable", "Backbone"], function(WorkableModel) {
+  define(["models/buildings/Workable", "collections/ViewportTiles", "Backbone"], function(WorkableModel, viewportTiles) {
     var Farm;
     return Farm = WorkableModel.extend({
       defaults: {
@@ -19,14 +19,20 @@
         }
       },
       onWorked: function() {
-        var newStage;
+        var mapTile, newStage;
         newStage = (this.get("stage") + 1) % 4;
         this.set("stage", newStage);
         if (newStage === 0) {
           this.trigger("madeResources", this.get("production"));
         }
         this.trigger("calculateBackgroundPosition");
-        return this.get("tileModel").trigger("updateBackgroundPosition");
+        mapTile = _.first(viewportTiles.where({
+          x: this.get("x"),
+          y: this.get("y")
+        }));
+        if (mapTile != null) {
+          return mapTile.trigger("updateBackgroundPosition");
+        }
       }
     });
   });

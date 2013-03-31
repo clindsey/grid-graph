@@ -1,15 +1,17 @@
 define [
       "models/heightmap/Heightmap"
+      "collections/ViewportTiles"
       "Backbone"
     ], (
-      heightmapModel) ->
+      heightmapModel,
+      viewportTiles) ->
 
   Road = Backbone.View.extend
     backgroundPositionX: 0
     backgroundPositionY: -256
 
     initialize: ->
-      #@listenTo @model.get("tileModel"), "neighborChanged", @onNeighborChanged
+      @listenTo @model, "neighborChanged", @onNeighborChanged
 
       roadTileType = @calculateRoadTile()
 
@@ -20,7 +22,11 @@ define [
 
       @backgroundPositionX = 0 - roadTileType * 16
 
-      @listenTo @model.get("tileModel").trigger "updateBackgroundPosition"
+      mapTile = _.first viewportTiles.where
+        x: @model.get "x"
+        y: @model.get "y"
+
+      mapTile.trigger("updateBackgroundPosition") if mapTile?
 
     calculateRoadTile: ->
       x = @model.get "x"
@@ -38,4 +44,4 @@ define [
       c = s << s * 4 - 2
       d = w << w * 4 - 1
 
-      t = a + b + c + d
+      a + b + c + d
