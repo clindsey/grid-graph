@@ -52,9 +52,11 @@
         }
       },
       initialize: function() {
-        this.listenTo(overviewModel, "change:money", this.onMoneyChanged);
+        this.listenTo(overviewModel, "change:wood", this.onResourcesChanged);
+        this.listenTo(overviewModel, "change:food", this.onResourcesChanged);
+        this.listenTo(overviewModel, "change:metal", this.onResourcesChanged);
         this.render();
-        return this.onMoneyChanged();
+        return this.onResourcesChanged();
       },
       render: function() {
         this.$el.html(this.template(this.contextIconLookup[this.menuOption]));
@@ -64,7 +66,7 @@
           placement: "left",
           html: true
         });
-        this.onMoneyChanged();
+        this.onResourcesChanged();
         return this;
       },
       onDropdownItemClick: function(jqEvent) {
@@ -119,10 +121,10 @@
       onRemoveBtnClick: function() {
         return this.activeContext = "remove";
       },
-      onMoneyChanged: function() {
-        var money;
-        money = overviewModel.get("money");
-        return this.$(".money-count").html("$" + money);
+      onResourcesChanged: function() {
+        this.$(".wood-count").html(overviewModel.get("wood"));
+        this.$(".food-count").html(overviewModel.get("food"));
+        return this.$(".metal-count").html(overviewModel.get("metal"));
       }
     });
   });

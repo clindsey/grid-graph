@@ -1,56 +1,68 @@
-<div class="btn-group">
-  <button class="move-btn btn-small btn">
-    <i class="icon-move"></i>
-  </button>
+<div class="row-fluid">
+  <div class="span-12">
+    <div class="btn-group">
+      <button class="move-btn btn-small btn">
+        <i class="icon-move"></i>
+      </button>
+    </div>
+    <div class="btn-group dropup">
+      <button class="dropdown-btn btn-small btn">
+        <i class="icon-<%= icon %>"></i> <%= label %>
+      </button>
+      <button class="dropdown-toggle btn-small btn" data-toggle="dropdown">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a class="road-btn" data-toggle="tooltip" title="Wood: 5" href="#">
+            <i class="icon-road"></i> Road
+          </a>
+        </li>
+        <li>
+          <a class="home-btn" data-toggle="tooltip" title="Wood: 20<br />Food: 10" href="#">
+            <i class="icon-home"></i> House
+          </a>
+        </li>
+        <li>
+          <a class="farm-btn" data-toggle="tooltip" title="Wood: 20" href="#">
+            <i class="icon-leaf"></i> Farm
+          </a>
+        </li>
+        <li>
+          <a class="mine-btn" data-toggle="tooltip" title="Wood: 20<br />Food 10" href="#">
+            <i class="icon-filter"></i> Mine
+          </a>
+        </li>
+        <li>
+          <a class="lumber-mill-btn" data-toggle="tooltip" title="Metal: 30<br />Food 20" href="#">
+            <i class="icon-inbox"></i> Lumber Mill
+          </a>
+        </li>
+        <!--
+        <li>
+          <a class="water-well-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 10<br />Food 10" href="#">
+          <i class="icon-tint"></i> Water Well
+          </a>
+        </li>
+        <li>
+          <a class="factory-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 30<br />Food 20" href="#">
+          <i class="icon-cogs"></i> Factory
+          </a>
+        </li>
+        -->
+      </ul>
+    </div>
+    <div class="btn-group">
+      <button class="remove-btn btn-small btn">
+        <i class="icon-trash"></i>
+      </button>
+    </div>
+  </div>
 </div>
-<div class="btn-group dropup">
-  <button class="dropdown-btn btn-small btn">
-    <i class="icon-<%= icon %>"></i> <%= label %>
-  </button>
-  <button class="dropdown-toggle btn-small btn" data-toggle="dropdown">
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-    <li>
-      <a class="road-btn" data-toggle="tooltip" title="Cost: $5" href="#">
-        <i class="icon-road"></i> Road
-      </a>
-    </li>
-    <li>
-      <a class="home-btn" data-toggle="tooltip" title="Cost: $25" href="#">
-        <i class="icon-home"></i> House
-      </a>
-    </li>
-    <li>
-      <a class="farm-btn" data-toggle="tooltip" title="Cost: $10<br />Revenue: $30" href="#">
-        <i class="icon-leaf"></i> Farm
-      </a>
-    </li>
-    <li>
-      <a class="mine-btn" data-toggle="tooltip" title="Cost: $60<br />Revenue: $5" href="#">
-        <i class="icon-filter"></i> Mine
-      </a>
-    </li>
-    <li>
-      <a class="lumber-mill-btn" data-toggle="tooltip" title="Cost: $60<br />Revenue: $5" href="#">
-        <i class="icon-inbox"></i> Lumber Mill
-      </a>
-    </li>
-    <li>
-      <a class="water-well-btn" data-toggle="tooltip" title="Cost: $60<br />Revenue: $5" href="#">
-      <i class="icon-tint"></i> Water Well
-      </a>
-    </li>
-    <li>
-      <a class="factory-btn" data-toggle="tooltip" title="Cost: $60<br />Revenue: $5" href="#">
-      <i class="icon-cogs"></i> Factory
-      </a>
-    </li>
-  </ul>
+<div class="row-fluid">
+  <div class="span-12">
+    <span class="wood-count label-success label">0</span>
+    <span class="food-count label-warning label">0</span>
+    <span class="metal-count label-inverse label">0</span>
+  </div>
 </div>
-<div class="btn-group">
-  <button class="remove-btn btn-small btn">
-    <i class="icon-trash"></i>
-  </button>
-</div>
-<span class="money-count badge">$0</span>

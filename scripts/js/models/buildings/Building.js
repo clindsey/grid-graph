@@ -4,7 +4,13 @@
     var Building;
     return Building = Backbone.Model.extend({
       defaults: {
-        needsWorker: false
+        type: "Building",
+        needsWorker: false,
+        resources: {
+          wood: 0,
+          food: 0,
+          metal: 0
+        }
       },
       initialize: function() {}
     });

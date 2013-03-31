@@ -6,6 +6,13 @@ define [
 
   Mine = WorkableModel.extend
     defaults:
+      type: "Mine"
       needsWorker: true
-      cost: 60
-      value: 5
+      resources:
+        wood: 20
+        food: 10
+        metal: 0
+      production:
+        wood: 0
+        food: 0
+        metal: 10

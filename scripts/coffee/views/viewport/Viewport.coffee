@@ -23,6 +23,7 @@ define [
       "models/buildings/Factory"
       "views/buildings/Factory"
       "collections/MapTiles"
+      "models/Overview"
       "Backbone"
     ], (
       viewportTiles,
@@ -48,7 +49,8 @@ define [
       WaterWellView,
       FactoryModel,
       FactoryView,
-      mapTiles) ->
+      mapTiles,
+      overview) ->
 
   ViewportView = Backbone.View.extend
     el: ".map-viewport"
@@ -65,6 +67,8 @@ define [
       @listenTo creatures, "add", @onCreatureAdded
       @listenTo buildings, "add", @onBuildingAdded
       @listenTo buildings, "remove", @onBuildingRemoved
+      @listenTo buildings, "reset", @onBuildingsReset
+      @listenTo creatures, "reset", @onCreaturesReset
 
     render: ->
       @$el.css
@@ -90,6 +94,7 @@ define [
         try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
           creatures.invoke "trigger", "tick"
         catch err
+          console.log "machine.js state tick err:", err
 
       @
 
@@ -171,50 +176,98 @@ define [
 
       tileModel.set "buildingView", undefined
 
-      creatureModel = buildingModel.get "creature"
+      creatureModel = _.first creatures.where # creature lives here
+        id: buildingModel.get "creatureFk"
 
       if creatureModel?
+        creatures.sync "delete", creatureModel
+
         creatures.remove creatureModel
 
-        workSite = creatureModel.get "workSite"
+        workSite = _.first buildings.where
+          id: creatureModel.get "workSiteFk"
 
         if workSite?
-          workSite.set "worker", undefined
+          workSite.set "workerFk", undefined
 
-      creatureModel = buildingModel.get "worker"
+          buildings.sync "update", workSite
+
+      creatureModel = _.first creatures.where # creature works here 
+        id: buildingModel.get "workerFk"
 
       if creatureModel?
-        creatureModel.set "workSite", undefined
+        creatureModel.set "workSiteFk", undefined
+
+        creatures.sync "update", creatureModel
+
+    onCreaturesReset: ->
+      creatures.each (creature) =>
+        @onCreatureAdded creature
+
+        creature.state.warp creature.get "stateIdentifier"
+
+    onBuildingsReset: ->
+      models = []
+
+      _.each buildings.toArray(), (buildingModel) =>
+        buildings.remove buildingModel,
+          silent: true
+
+        switch buildingModel.get "type"
+          when "Home"
+            model = new HomeModel buildingModel.attributes
+          when "Farm"
+            model = new FarmModel buildingModel.attributes
+          when "Road"
+            model = new RoadModel buildingModel.attributes
+          when "Mine"
+            model = new MineModel buildingModel.attributes
+          when "LumberMill"
+            model = new LumberMillModel buildingModel.attributes
+          when "WaterWell"
+            model = new WaterWellModel buildingModel.attributes
+          when "Factory"
+            model = new FactoryModel buildingModel.attributes
+          else
+            return
+
+        models.push model
+
+      buildings.reset [],
+        silent: true
+
+      buildings.reset models,
+        silent: true
+
+      buildings.each (buildingModel) =>
+        @onBuildingAdded buildingModel
+
+      buildings.each (buildingModel) =>
+        foremanModel.informNeighbors buildingModel
 
     onBuildingAdded: (buildingModel) ->
-      if buildingModel instanceof HomeModel
-        buildingView = new HomeView model: buildingModel
+      switch buildingModel.get "type"
+        when "Home"
+          buildingView = new HomeView model: buildingModel
+        when "Farm"
+          buildingView = new FarmView model: buildingModel
+        when "Road"
+          buildingView = new RoadView model: buildingModel
+        when "Mine"
+          buildingView = new MineView model: buildingModel
+        when "LumberMill"
+          buildingView = new LumberMillView model: buildingModel
+        when "WaterWell"
+          buildingView = new WaterWellView model: buildingModel
+        when "Factory"
+          buildingView = new FactoryView model: buildingModel
+        else
+          return
 
-      else if buildingModel instanceof FarmModel
-        buildingView = new FarmView model: buildingModel
+      buildingModel.trigger "calculateBackgroundPosition"
 
-      else if buildingModel instanceof RoadModel
-        buildingView = new RoadView model: buildingModel
-
-      else if buildingModel instanceof MineModel
-        buildingView = new MineView model: buildingModel
-
-      else if buildingModel instanceof LumberMillModel
-        buildingView = new LumberMillView model: buildingModel
-
-      else if buildingModel instanceof WaterWellModel
-        buildingView = new WaterWellView model: buildingModel
-
-      else if buildingModel instanceof FactoryModel
-        buildingView = new FactoryView model: buildingModel
-
-      else
-        return
-
-      tileModels = mapTiles.where
+      tileModel = _.first mapTiles.where
         x: buildingModel.get "x"
         y: buildingModel.get "y"
-
-      tileModel = _.first tileModels
 
       tileModel.set "buildingView", buildingView

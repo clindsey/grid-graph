@@ -1,22 +1,35 @@
 (function() {
 
-  define(["models/entities/Entity", "models/heightmap/Heightmap", "AStar", "Machine", "Backbone"], function(EntityModel, heightmapModel, AStar) {
+  define(["models/entities/Entity", "models/heightmap/Heightmap", "collections/Buildings", "AStar", "Machine", "Backbone"], function(EntityModel, heightmapModel, buildings, AStar) {
     var Creature;
     return Creature = EntityModel.extend({
       defaults: {
         path: [],
-        workSite: void 0,
-        home: void 0
+        workSiteFk: void 0,
+        homeFk: void 0
       },
       initialize: function() {
         var machine,
           _this = this;
         machine = new Machine;
         this.set("direction", "south");
-        this.set("state", machine.generateTree(this.behaviorTree, this, this.states));
+        this.state = machine.generateTree(this.behaviorTree, this, this.states);
+        this.set("stateIdentifier", this.state.identifier);
         return this.listenTo(this, "tick", function() {
-          return _this.set("state", _this.get("state").tick());
+          _this.state = _this.state.tick();
+          _this.set("stateIdentifier", _this.state.identifier);
+          return _this.collection.sync("update", _this);
         });
+      },
+      getWorkSite: function() {
+        return _.first(buildings.where({
+          id: this.get("workSiteFk")
+        }));
+      },
+      getHomeSite: function() {
+        return _.first(buildings.where({
+          id: this.get("homeFk")
+        }));
       },
       findPath: function(tileModel) {
         var deltaX, deltaY, end, grid, index, lastStep, path, pathOut, pathStep, start, targetX, targetY, worldHalfHeight, worldHalfWidth, worldTileHeight, worldTileWidth, x, y, _i, _len;
@@ -74,7 +87,7 @@
       states: {
         sleep: function() {
           var path, workSiteModel;
-          workSiteModel = this.get("workSite");
+          workSiteModel = this.getWorkSite();
           if (workSiteModel == null) {
             return;
           }
@@ -85,9 +98,10 @@
           return this.set("path", path);
         },
         canSleep: function() {
-          var homeModel, homeX, homeY, path, x, y;
+          var homeModel, homeX, homeY, path, workSiteModel, x, y;
           path = this.get("path");
-          if ((this.get("home") != null) === false || (this.get("workSite") != null) === false) {
+          workSiteModel = this.getWorkSite();
+          if ((this.get("home") != null) === false || (workSiteModel != null) === false) {
             if (path.length === 0) {
               return true;
             }
@@ -95,7 +109,7 @@
           if (path.length !== 0) {
             return false;
           }
-          homeModel = this.get("home");
+          homeModel = this.getHomeSite();
           if (homeModel == null) {
             return false;
           }
@@ -137,13 +151,15 @@
           return !!this.get("path").length;
         },
         water: function() {
-          var homeModel, path;
-          homeModel = this.get("home");
+          var homeModel, path, workSite;
+          homeModel = this.getHomeSite();
           path = this.findPath(homeModel);
           if (path.length === 0) {
             return;
           }
-          this.get("workSite").trigger("worked");
+          workSite = this.getWorkSite();
+          workSite.trigger("worked");
+          buildings.sync("update", workSite);
           return this.set("path", path);
         },
         canWater: function() {
@@ -152,9 +168,9 @@
           if (path.length !== 0) {
             return false;
           }
-          workSiteModel = this.get("workSite");
+          workSiteModel = this.getWorkSite();
           if (workSiteModel == null) {
-            homeModel = this.get("home");
+            homeModel = this.getHomeSite();
             path = this.findPath(homeModel);
             if (path.length <= 1) {
               return false;

@@ -1,6 +1,6 @@
 (function() {
 
-  define(["collections/Creatures", "models/heightmap/Heightmap", "collections/MapTiles", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, mapTiles, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
+  define(["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
     var Foreman;
     Foreman = Backbone.Model.extend({
       removeBuilding: function(tileModel) {
@@ -12,38 +12,46 @@
           y: y
         });
         buildingModel = _.first(foundBuildings);
-        buildings.remove(buildingModel);
-        return this.informNeighbors(tileModel);
+        tileModel.set("isOccupied", false);
+        this.informNeighbors(buildingModel);
+        buildings.sync("delete", buildingModel);
+        return buildings.remove(buildingModel);
       },
       putRoad: function(tileModel) {
         var roadModel, x, y;
         x = tileModel.get("x");
         y = tileModel.get("y");
         roadModel = new RoadModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(roadModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase roadModel.get "resources"
+          return
+        */
+
         buildings.add(roadModel);
-        this.informNeighbors(tileModel);
-        return this.assignIdleWorkers();
+        this.assignIdleWorkers();
+        buildings.sync("create", roadModel);
+        tileModel.set("isOccupied", true);
+        return this.informNeighbors(tileModel);
       },
       putFarm: function(tileModel) {
         var farmModel, x, y;
         x = tileModel.get("x");
         y = tileModel.get("y");
         farmModel = new FarmModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(farmModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase farmModel.get "resources"
+          return
+        */
+
         buildings.add(farmModel);
+        tileModel.set("isOccupied", true);
+        buildings.sync("create", farmModel);
         this.informNeighbors(tileModel);
         return this.findWorker(farmModel);
       },
@@ -52,22 +60,26 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         homeModel = new HomeModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(homeModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase homeModel.get "resources"
+          return
+        */
+
         buildings.add(homeModel);
+        buildings.sync("create", homeModel);
+        tileModel.set("isOccupied", true);
         this.informNeighbors(tileModel);
         creatureModel = new CreatureModel({
           x: x,
           y: y
         });
         creatures.add(creatureModel);
-        creatureModel.set("home", homeModel);
-        homeModel.set("creature", creatureModel);
+        creatureModel.set("homeFk", homeModel.get("id"));
+        creatures.sync("create", creatureModel);
+        homeModel.set("creatureFk", creatureModel.get("id"));
         return this.findJob(creatureModel);
       },
       putMine: function(tileModel) {
@@ -75,14 +87,17 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         mineModel = new MineModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(mineModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase mineModel.get "resources"
+          return
+        */
+
         buildings.add(mineModel);
+        tileModel.set("isOccupied", true);
+        buildings.sync("create", mineModel);
         this.informNeighbors(tileModel);
         return this.findWorker(mineModel);
       },
@@ -91,14 +106,17 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         lumberMillModel = new LumberMillModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(lumberMillModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase lumberMillModel.get "resources"
+          return
+        */
+
         buildings.add(lumberMillModel);
+        tileModel.set("isOccupied", true);
+        buildings.sync("create", lumberMillModel);
         this.informNeighbors(tileModel);
         return this.findWorker(lumberMillModel);
       },
@@ -107,14 +125,16 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         waterWellModel = new WaterWellModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(waterWellModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase waterWellModel.get "resources"
+          return
+        */
+
         buildings.add(waterWellModel);
+        tileModel.set("isOccupied", true);
         this.informNeighbors(tileModel);
         return this.findWorker(waterWellModel);
       },
@@ -123,27 +143,31 @@
         x = tileModel.get("x");
         y = tileModel.get("y");
         factoryModel = new FactoryModel({
-          tileModel: tileModel,
           x: x,
           y: y
         });
-        if (!overview.purchase(factoryModel.get("cost"))) {
-          return;
-        }
+        /*
+        unless overview.purchase factoryModel.get "resources"
+          return
+        */
+
         buildings.add(factoryModel);
+        tileModel.set("isOccupied", true);
         this.informNeighbors(tileModel);
         return this.findWorker(factoryModel);
       },
       assignWorkerToSite: function(unemployedCreature, workSiteModel) {
-        unemployedCreature.set("workSite", workSiteModel);
-        return workSiteModel.set("worker", unemployedCreature);
+        unemployedCreature.set("workSiteFk", workSiteModel.get("id"));
+        workSiteModel.set("workerFk", unemployedCreature.get("id"));
+        creatures.sync("update", unemployedCreature);
+        return buildings.sync("update", workSiteModel);
       },
       findJob: function(unemployedCreature) {
         var availableJobs,
           _this = this;
         availableJobs = buildings.where({
           needsWorker: true,
-          worker: void 0
+          workerFk: void 0
         });
         if (availableJobs.length === 0) {
           return;
@@ -162,7 +186,7 @@
         var unemployedCreatures,
           _this = this;
         unemployedCreatures = creatures.where({
-          workSite: void 0
+          workSiteFk: void 0
         });
         if (unemployedCreatures.length === 0) {
           return;
@@ -171,7 +195,7 @@
           var availableJobs;
           availableJobs = buildings.where({
             needsWorker: true,
-            worker: void 0
+            workerFk: void 0
           });
           if (availableJobs.length === 0) {
             return true;
@@ -192,7 +216,7 @@
         var unemployedCreatures,
           _this = this;
         unemployedCreatures = creatures.where({
-          workSite: void 0
+          workSiteFk: void 0
         });
         if (unemployedCreatures.length === 0) {
           return;
@@ -207,13 +231,20 @@
           return true;
         });
       },
-      informNeighbors: function(tileModel) {
+      informNeighbors: function(buildingModel) {
         var neighboringTiles, x, y;
-        x = tileModel.get("x");
-        y = tileModel.get("y");
+        x = buildingModel.get("x");
+        y = buildingModel.get("y");
         neighboringTiles = heightmapModel.getNeighboringTiles(x, y);
         return _.each(neighboringTiles, function(neighboringTile) {
-          return neighboringTile.trigger("neighborChanged");
+          neighboringTile.trigger("neighborChanged");
+          buildingModel = _.first(buildings.where({
+            x: neighboringTile.get("x"),
+            y: neighboringTile.get("y")
+          }));
+          if (buildingModel != null) {
+            return buildingModel.trigger("neighborChanged");
+          }
         });
       }
     });

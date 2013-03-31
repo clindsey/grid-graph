@@ -2,16 +2,21 @@ define [
       "models/heightmap/HeightmapChunk"
       "models/MapTile"
       "collections/MapTiles"
+      "collections/Planets"
       "Alea"
       "Backbone"
     ], (
       HeightmapChunkModel,
       MapTileModel,
-      mapTiles) ->
+      mapTiles,
+      planets) ->
 
   Heightmap = Backbone.Model.extend
     initialize: ->
-      @set "SEED", +new Date
+      @listenTo planets, "active", @generateData
+
+    generateData: (activePlanet) ->
+      @set "SEED", activePlanet.get "seed"
 
       worldChunkWidth = 8
       worldChunkHeight = 8
@@ -53,20 +58,21 @@ define [
           if o is 0
             s = 0
           else
-            a = n << n * 8 - 4
-            b = e << e * 8 - 3
-            c = s << s * 8 - 2
-            d = w << w * 8 - 1
-            e = ne << ne * 8 - 8
-            f = se << se * 8 - 7
-            g = sw << sw * 8 - 6
-            h = nw << nw * 8 - 5
+            a = n << n * 4
+            b = e << e * 5
+            c = s << s * 6
+            d = w << w * 7
+            e = ne << ne * 0
+            f = se << se * 1
+            g = nw << nw * 3
+            h = sw << sw * 2
+
             s = a + b + c + d + e + f + g + h
 
-          mapTileModel = new MapTileModel(
+          mapTileModel = new MapTileModel
               type: s
               x: x
-              y: y)
+              y: y
 
           data[y][x] = mapTileModel
 

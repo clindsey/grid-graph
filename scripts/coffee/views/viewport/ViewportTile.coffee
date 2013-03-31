@@ -10,6 +10,8 @@ define [
     className: "map-tile"
 
     render: ->
+      @$el.removeClass "water-tile"
+
       @calculateBackgroundPosition()
 
       @setBackgroundPosition()
@@ -31,6 +33,10 @@ define [
         @backgroundPositionY = buildingView.backgroundPositionY
       else
         type = @model.get "type"
+
+        if type is 0
+          @$el.addClass "water-tile"
+
         @backgroundPositionX = 0 - ((type % 16) * 16)
         @backgroundPositionY = 0 - (~~(type / 16) * 16)
 

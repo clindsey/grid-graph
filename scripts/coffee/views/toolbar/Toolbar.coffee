@@ -54,11 +54,13 @@ define [
         label: "Factory"
 
     initialize: ->
-      @listenTo overviewModel, "change:money", @onMoneyChanged
+      @listenTo overviewModel, "change:wood", @onResourcesChanged
+      @listenTo overviewModel, "change:food", @onResourcesChanged
+      @listenTo overviewModel, "change:metal", @onResourcesChanged
 
       @render()
 
-      @onMoneyChanged()
+      @onResourcesChanged()
 
     render: ->
       @$el.html @template @contextIconLookup[@menuOption]
@@ -70,7 +72,7 @@ define [
         placement: "left"
         html: true
 
-      @onMoneyChanged()
+      @onResourcesChanged()
 
       @
 
@@ -130,7 +132,7 @@ define [
     onRemoveBtnClick: ->
       @activeContext = "remove"
 
-    onMoneyChanged: ->
-      money = overviewModel.get "money"
-
-      @$(".money-count").html "$#{money}"
+    onResourcesChanged: ->
+      @$(".wood-count").html overviewModel.get "wood"
+      @$(".food-count").html overviewModel.get "food"
+      @$(".metal-count").html overviewModel.get "metal"

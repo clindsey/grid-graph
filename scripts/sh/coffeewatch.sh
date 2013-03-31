@@ -1,3 +1,3 @@
 #!/bin/sh
 
-coffee -r coffeescript-growl -o scripts/js/ -cw scripts/coffee/
+jitter scripts/coffee/ scripts/js/

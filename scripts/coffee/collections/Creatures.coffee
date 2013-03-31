@@ -1,12 +1,13 @@
 define [
       "models/entities/Creature"
       "Backbone"
+      "localstorage"
     ], (
       CreatureModel) ->
 
   Creatures = Backbone.Collection.extend
     model: CreatureModel
 
-    initialize: ->
+    localStorage: new Backbone.LocalStorage("Creatures")
 
   new Creatures
