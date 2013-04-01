@@ -9,17 +9,18 @@
       },
       initialize: function() {
         _.bindAll(this, "onMapTileClick");
-        this.render();
         this.listenTo(viewportModel, "moved", this.onViewportMoved);
         this.listenTo(creatures, "add", this.onCreatureAdded);
         this.listenTo(buildings, "add", this.onBuildingAdded);
         this.listenTo(buildings, "remove", this.onBuildingRemoved);
         this.listenTo(buildings, "reset", this.onBuildingsReset);
-        return this.listenTo(creatures, "reset", this.onCreaturesReset);
+        this.listenTo(creatures, "reset", this.onCreaturesReset);
+        return this.render();
       },
       render: function() {
         var interval,
           _this = this;
+        this.$el.empty();
         this.$el.css({
           width: viewportModel.get("width") * 16,
           height: viewportModel.get("height") * 16
@@ -36,16 +37,18 @@
           return _this.grid.push(viewportTileView);
         });
         interval = function(time, cb) {
-          return setInterval(cb, time);
+          clearTimeout(window.timeout);
+          return window.timeout = setInterval(cb, time);
         };
-        interval(1000 / 1, function() {
-          try {
-            return creatures.invoke("trigger", "tick");
-          } catch (err) {
-            return console.log("machine.js state tick err:", err);
-          }
-        });
+        interval(1000 / 1, this.onIntervalTick);
         return this;
+      },
+      onIntervalTick: function() {
+        try {
+          return creatures.invoke("trigger", "tick");
+        } catch (err) {
+          return console.log("machine.js state tick err:", err);
+        }
       },
       onClick: function(jqEvent) {
         if (this.options.toolbarView.activeContext === "move") {

@@ -1,13 +1,19 @@
 define [
       "models/buildings/Building"
+      "collections/Planets"
       "Backbone"
       "localstorage"
     ], (
-      BuildingModel) ->
+      BuildingModel,
+      planets) ->
 
   Buildings = Backbone.Collection.extend
     model: BuildingModel
 
-    localStorage: new Backbone.LocalStorage("Buildings")
+    initialize: ->
+      @listenTo planets, "active", @onPlanetActive
+
+    onPlanetActive: (activePlanet) ->
+      @localStorage =  new Backbone.LocalStorage "Buildings-#{activePlanet.get "seed"}"
 
   new Buildings

@@ -28,17 +28,24 @@ define [
       toolbarView = new ToolbarView
 
       galaxy = new GalaxyModel
-        seed: 20130330
-        size: 1
+        seed: 20130401
+        size: 5
+
+      viewport = new ViewportView
+        toolbarView: toolbarView
 
       new PlanetListView
 
-      galaxy.generate()
-
-      new ViewportView
-        toolbarView: toolbarView
-
       @listenTo buildings, "reset", ->
+        viewport.render()
+
         creatures.fetch()
 
-      buildings.fetch()
+      @listenTo creatures, "reset", ->
+
+      @listenTo planets, "active", (activePlanet) ->
+        buildings.fetch()
+
+      galaxy.generate()
+
+      planets.first().activate()

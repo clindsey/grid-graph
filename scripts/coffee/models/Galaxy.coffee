@@ -23,5 +23,3 @@ define [
         planetModels.push planet
 
       planets.reset planetModels
-
-      planets.first().activate()
