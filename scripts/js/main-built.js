@@ -13637,13 +13637,13 @@ define("Machine", function(){});
           }, {
             identifier: "walk"
           }, {
-            identifier: "water",
+            identifier: "work",
             strategy: "sequential",
             children: [
               {
-                identifier: "water"
+                identifier: "work"
               }, {
-                identifier: "walk"
+                identifier: "carry"
               }
             ]
           }
@@ -13715,7 +13715,38 @@ define("Machine", function(){});
         canWalk: function() {
           return !!this.get("path").length;
         },
-        water: function() {
+        carry: function() {
+          var direction, nearRoad, path;
+          path = this.get("path");
+          nearRoad = path.shift();
+          this.set("path", path);
+          if (!((nearRoad != null) && !!nearRoad.length)) {
+            return;
+          }
+          this.trigger("step", nearRoad);
+          this.set({
+            "x": heightmapModel.clampX(this.get("x") + nearRoad[0]),
+            "y": heightmapModel.clampY(this.get("y") + nearRoad[1])
+          });
+          direction = "south";
+          if (nearRoad[0] === 1) {
+            direction = "east";
+          }
+          if (nearRoad[0] === -1) {
+            direction = "west";
+          }
+          if (nearRoad[1] === 1) {
+            direction = "south";
+          }
+          if (nearRoad[1] === -1) {
+            direction = "north";
+          }
+          return this.set("direction", direction);
+        },
+        canCarry: function() {
+          return !!this.get("path").length;
+        },
+        work: function() {
           var homeModel, path, workSite;
           homeModel = this.getHomeSite();
           path = this.findPath(homeModel);
@@ -13727,7 +13758,7 @@ define("Machine", function(){});
           buildings.sync("update", workSite);
           return this.set("path", path);
         },
-        canWater: function() {
+        canWork: function() {
           var homeModel, path, workSiteModel, workX, workY, x, y;
           path = this.get("path");
           if (path.length !== 0) {
@@ -13741,7 +13772,7 @@ define("Machine", function(){});
               return false;
             }
             this.set("path", path);
-            this.set("state", this.get("state").warp("water"));
+            this.set("state", this.get("state").warp("work"));
             return false;
           }
           workX = workSiteModel.get("x");
@@ -13917,6 +13948,20 @@ define("Machine", function(){});
 
 (function() {
 
+  define('models/buildings/ExportCenter',["models/buildings/Workable", "Backbone"], function(WorkableModel) {
+    var ExportCenter;
+    return ExportCenter = WorkableModel.extend({
+      defaults: {
+        type: "ExportCenter",
+        needsWorker: false
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+
   define('models/buildings/Farm',["models/buildings/Workable", "collections/ViewportTiles", "Backbone"], function(WorkableModel, viewportTiles) {
     var Farm;
     return Farm = WorkableModel.extend({
@@ -13931,24 +13976,8 @@ define("Machine", function(){});
         },
         production: {
           wood: 0,
-          food: 45,
+          food: 5,
           metal: 0
-        }
-      },
-      onWorked: function() {
-        var mapTile, newStage;
-        newStage = (this.get("stage") + 1) % 4;
-        this.set("stage", newStage);
-        if (newStage === 0) {
-          this.trigger("madeResources", this.get("production"));
-        }
-        this.trigger("calculateBackgroundPosition");
-        mapTile = _.first(viewportTiles.where({
-          x: this.get("x"),
-          y: this.get("y")
-        }));
-        if (mapTile != null) {
-          return mapTile.trigger("updateBackgroundPosition");
         }
       }
     });
@@ -14016,7 +14045,7 @@ define("Machine", function(){});
         production: {
           wood: 0,
           food: 0,
-          metal: 10
+          metal: 5
         }
       }
     });
@@ -14038,7 +14067,7 @@ define("Machine", function(){});
           metal: 20
         },
         production: {
-          wood: 10,
+          wood: 5,
           food: 0,
           metal: 0
         }
@@ -14143,18 +14172,17 @@ define("Machine", function(){});
 
 (function() {
 
-  define('models/Foreman',["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
+  define('models/Foreman',["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/ExportCenter", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, ExportCenterModel, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
     var Foreman;
     Foreman = Backbone.Model.extend({
       removeBuilding: function(tileModel) {
-        var buildingModel, foundBuildings, x, y;
+        var buildingModel, x, y;
         x = tileModel.get("x");
         y = tileModel.get("y");
-        foundBuildings = buildings.where({
+        buildingModel = _.first(buildings.where({
           x: x,
           y: y
-        });
-        buildingModel = _.first(foundBuildings);
+        }));
         tileModel.set("isOccupied", false);
         this.informNeighbors(buildingModel);
         buildings.sync("delete", buildingModel);
@@ -14177,6 +14205,24 @@ define("Machine", function(){});
         this.assignIdleWorkers();
         buildings.sync("create", roadModel);
         tileModel.set("isOccupied", true);
+        return this.informNeighbors(tileModel);
+      },
+      putExportCenter: function(tileModel) {
+        var exportCenterModel, x, y;
+        x = tileModel.get("x");
+        y = tileModel.get("y");
+        exportCenterModel = new ExportCenterModel({
+          x: x,
+          y: y
+        });
+        /*
+        unless overview.purchase ExportCenterModel.get "resources"
+          return
+        */
+
+        buildings.add(exportCenterModel);
+        tileModel.set("isOccupied", true);
+        buildings.sync("create", exportCenterModel);
         return this.informNeighbors(tileModel);
       },
       putFarm: function(tileModel) {
@@ -14212,7 +14258,6 @@ define("Machine", function(){});
         */
 
         buildings.add(homeModel);
-        buildings.sync("create", homeModel);
         tileModel.set("isOccupied", true);
         this.informNeighbors(tileModel);
         creatureModel = new CreatureModel({
@@ -14223,6 +14268,7 @@ define("Machine", function(){});
         creatureModel.set("homeFk", homeModel.get("id"));
         creatures.sync("create", creatureModel);
         homeModel.set("creatureFk", creatureModel.get("id"));
+        buildings.sync("create", homeModel);
         return this.findJob(creatureModel);
       },
       putMine: function(tileModel) {
@@ -14429,13 +14475,25 @@ define("Machine", function(){});
 
 (function() {
 
+  define('views/buildings/ExportCenter',["views/buildings/Workable", "Backbone"], function(WorkableView) {
+    var ExportCenter;
+    return ExportCenter = WorkableView.extend({
+      backgroundPositionX: -160,
+      backgroundPositionY: -272
+    });
+  });
+
+}).call(this);
+
+(function() {
+
   define('views/buildings/Farm',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var Farm;
     return Farm = WorkableView.extend({
       backgroundPositionX: -32,
       backgroundPositionY: -272,
       calculateBackgroundPosition: function() {
-        return this.backgroundPositionX = 0 - 32 - (this.model.get("stage") * 16);
+        return this.backgroundPositionX = 0 - 32 - (3 * 16);
       }
     });
   });
@@ -14537,7 +14595,7 @@ define("Machine", function(){});
 
 (function() {
 
-  define('views/viewport/Viewport',["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "models/Overview", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles, overview) {
+  define('views/viewport/Viewport',["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/ExportCenter", "views/buildings/ExportCenter", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "models/Overview", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, ExportCenterModel, ExportCenterView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles, overview) {
     var ViewportView;
     return ViewportView = Backbone.View.extend({
       el: ".map-viewport",
@@ -14607,6 +14665,8 @@ define("Machine", function(){});
             return "";
           case "road":
             return foremanModel.putRoad(tileModel);
+          case "export center":
+            return foremanModel.putExportCenter(tileModel);
           case "home":
             return foremanModel.putHome(tileModel);
           case "farm":
@@ -14702,6 +14762,9 @@ define("Machine", function(){});
             case "Home":
               model = new HomeModel(buildingModel.attributes);
               break;
+            case "ExportCenter":
+              model = new ExportCenterModel(buildingModel.attributes);
+              break;
             case "Farm":
               model = new FarmModel(buildingModel.attributes);
               break;
@@ -14743,6 +14806,11 @@ define("Machine", function(){});
         switch (buildingModel.get("type")) {
           case "Home":
             buildingView = new HomeView({
+              model: buildingModel
+            });
+            break;
+          case "ExportCenter":
+            buildingView = new ExportCenterView({
               model: buildingModel
             });
             break;
@@ -17396,6 +17464,7 @@ define("Bootstrap", function(){});
         "click .btn": "onBtnClick",
         "click .dropdown-btn": "onDropdownBtnClick",
         "click .dropdown-menu .road-btn": "onRoadBtnClick",
+        "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick",
         "click .dropdown-menu .home-btn": "onHomeBtnClick",
         "click .dropdown-menu .farm-btn": "onFarmBtnClick",
         "click .dropdown-menu .mine-btn": "onMineBtnClick",
@@ -17410,6 +17479,10 @@ define("Bootstrap", function(){});
         "road": {
           icon: "road",
           label: "Road"
+        },
+        "export center": {
+          icon: "share",
+          label: "Export Center"
         },
         "home": {
           icon: "home",
@@ -17482,6 +17555,10 @@ define("Bootstrap", function(){});
       onHomeBtnClick: function() {
         this.activeContext = "home";
         return this.menuOption = "home";
+      },
+      onExportCenterBtnClick: function() {
+        this.activeContext = "export center";
+        return this.menuOption = "export center";
       },
       onFarmBtnClick: function() {
         this.activeContext = "farm";
