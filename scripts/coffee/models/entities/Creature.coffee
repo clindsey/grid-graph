@@ -85,11 +85,11 @@ define [
         { identifier: "sleep" }
         { identifier: "walk" }
         {
-          identifier: "water"
+          identifier: "work"
           strategy: "sequential"
           children: [
-            { identifier: "water" }
-            { identifier: "walk" }
+            { identifier: "work" }
+            { identifier: "carry" }
           ]
         }
       ]
@@ -164,7 +164,38 @@ define [
       canWalk: ->
         !!@get("path").length
 
-      water: ->
+      carry: ->
+        path = @get "path"
+
+        nearRoad = path.shift()
+
+        @set "path", path
+
+        return unless nearRoad? and !!nearRoad.length
+
+        @trigger "step", nearRoad
+
+        @set
+          "x": heightmapModel.clampX @get("x") + nearRoad[0]
+          "y": heightmapModel.clampY @get("y") + nearRoad[1]
+
+        direction = "south"
+
+        if nearRoad[0] is 1
+          direction = "east"
+        if nearRoad[0] is -1
+          direction = "west"
+        if nearRoad[1] is 1
+          direction = "south"
+        if nearRoad[1] is -1
+          direction = "north"
+
+        @set "direction", direction
+
+      canCarry: ->
+        !!@get("path").length
+
+      work: ->
         homeModel = @getHomeSite()
 
         path = @findPath homeModel
@@ -180,7 +211,7 @@ define [
 
         @set "path", path
 
-      canWater: ->
+      canWork: ->
         path = @get "path"
 
         if path.length isnt 0
@@ -198,7 +229,7 @@ define [
 
           @set "path", path
 
-          @set "state", @get("state").warp("water")
+          @set "state", @get("state").warp("work")
           return false
 
         workX = workSiteModel.get "x"

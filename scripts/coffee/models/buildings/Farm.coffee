@@ -17,21 +17,5 @@ define [
         metal: 0
       production:
         wood: 0
-        food: 45
+        food: 5
         metal: 0
-
-    onWorked: ->
-      newStage = (@get("stage") + 1) % 4
-
-      @set "stage", newStage
-
-      if newStage is 0
-        @trigger "madeResources", @get "production"
-
-      @trigger "calculateBackgroundPosition"
-
-      mapTile = _.first viewportTiles.where
-        x: @get "x"
-        y: @get "y"
-
-      mapTile.trigger("updateBackgroundPosition") if mapTile?

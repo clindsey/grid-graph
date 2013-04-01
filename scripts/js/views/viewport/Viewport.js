@@ -1,6 +1,6 @@
 (function() {
 
-  define(["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "models/Overview", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles, overview) {
+  define(["collections/ViewportTiles", "views/viewport/ViewportTile", "models/Viewport", "models/heightmap/Heightmap", "collections/Creatures", "collections/Buildings", "models/entities/Creature", "views/entities/Creature", "models/Foreman", "models/buildings/Home", "views/buildings/Home", "models/buildings/ExportCenter", "views/buildings/ExportCenter", "models/buildings/Farm", "views/buildings/Farm", "models/buildings/Road", "views/buildings/Road", "models/buildings/Mine", "views/buildings/Mine", "models/buildings/LumberMill", "views/buildings/LumberMill", "models/buildings/WaterWell", "views/buildings/WaterWell", "models/buildings/Factory", "views/buildings/Factory", "collections/MapTiles", "models/Overview", "Backbone"], function(viewportTiles, ViewportTileView, viewportModel, heightmapModel, creatures, buildings, CreatureModel, CreatureView, foremanModel, HomeModel, HomeView, ExportCenterModel, ExportCenterView, FarmModel, FarmView, RoadModel, RoadView, MineModel, MineView, LumberMillModel, LumberMillView, WaterWellModel, WaterWellView, FactoryModel, FactoryView, mapTiles, overview) {
     var ViewportView;
     return ViewportView = Backbone.View.extend({
       el: ".map-viewport",
@@ -70,6 +70,8 @@
             return "";
           case "road":
             return foremanModel.putRoad(tileModel);
+          case "export center":
+            return foremanModel.putExportCenter(tileModel);
           case "home":
             return foremanModel.putHome(tileModel);
           case "farm":
@@ -165,6 +167,9 @@
             case "Home":
               model = new HomeModel(buildingModel.attributes);
               break;
+            case "ExportCenter":
+              model = new ExportCenterModel(buildingModel.attributes);
+              break;
             case "Farm":
               model = new FarmModel(buildingModel.attributes);
               break;
@@ -206,6 +211,11 @@
         switch (buildingModel.get("type")) {
           case "Home":
             buildingView = new HomeView({
+              model: buildingModel
+            });
+            break;
+          case "ExportCenter":
+            buildingView = new ExportCenterView({
               model: buildingModel
             });
             break;

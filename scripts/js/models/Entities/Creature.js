@@ -72,13 +72,13 @@
           }, {
             identifier: "walk"
           }, {
-            identifier: "water",
+            identifier: "work",
             strategy: "sequential",
             children: [
               {
-                identifier: "water"
+                identifier: "work"
               }, {
-                identifier: "walk"
+                identifier: "carry"
               }
             ]
           }
@@ -150,7 +150,38 @@
         canWalk: function() {
           return !!this.get("path").length;
         },
-        water: function() {
+        carry: function() {
+          var direction, nearRoad, path;
+          path = this.get("path");
+          nearRoad = path.shift();
+          this.set("path", path);
+          if (!((nearRoad != null) && !!nearRoad.length)) {
+            return;
+          }
+          this.trigger("step", nearRoad);
+          this.set({
+            "x": heightmapModel.clampX(this.get("x") + nearRoad[0]),
+            "y": heightmapModel.clampY(this.get("y") + nearRoad[1])
+          });
+          direction = "south";
+          if (nearRoad[0] === 1) {
+            direction = "east";
+          }
+          if (nearRoad[0] === -1) {
+            direction = "west";
+          }
+          if (nearRoad[1] === 1) {
+            direction = "south";
+          }
+          if (nearRoad[1] === -1) {
+            direction = "north";
+          }
+          return this.set("direction", direction);
+        },
+        canCarry: function() {
+          return !!this.get("path").length;
+        },
+        work: function() {
           var homeModel, path, workSite;
           homeModel = this.getHomeSite();
           path = this.findPath(homeModel);
@@ -162,7 +193,7 @@
           buildings.sync("update", workSite);
           return this.set("path", path);
         },
-        canWater: function() {
+        canWork: function() {
           var homeModel, path, workSiteModel, workX, workY, x, y;
           path = this.get("path");
           if (path.length !== 0) {
@@ -176,7 +207,7 @@
               return false;
             }
             this.set("path", path);
-            this.set("state", this.get("state").warp("water"));
+            this.set("state", this.get("state").warp("work"));
             return false;
           }
           workX = workSiteModel.get("x");

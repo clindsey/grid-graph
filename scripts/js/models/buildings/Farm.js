@@ -14,24 +14,8 @@
         },
         production: {
           wood: 0,
-          food: 45,
+          food: 5,
           metal: 0
-        }
-      },
-      onWorked: function() {
-        var mapTile, newStage;
-        newStage = (this.get("stage") + 1) % 4;
-        this.set("stage", newStage);
-        if (newStage === 0) {
-          this.trigger("madeResources", this.get("production"));
-        }
-        this.trigger("calculateBackgroundPosition");
-        mapTile = _.first(viewportTiles.where({
-          x: this.get("x"),
-          y: this.get("y")
-        }));
-        if (mapTile != null) {
-          return mapTile.trigger("updateBackgroundPosition");
         }
       }
     });

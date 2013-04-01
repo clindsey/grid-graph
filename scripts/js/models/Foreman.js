@@ -1,17 +1,16 @@
 (function() {
 
-  define(["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
+  define(["collections/Creatures", "models/heightmap/Heightmap", "models/entities/Creature", "collections/Buildings", "models/buildings/ExportCenter", "models/buildings/Farm", "models/buildings/Road", "models/buildings/Home", "models/buildings/Mine", "models/buildings/LumberMill", "models/buildings/WaterWell", "models/buildings/Factory", "models/Overview", "Backbone"], function(creatures, heightmapModel, CreatureModel, buildings, ExportCenterModel, FarmModel, RoadModel, HomeModel, MineModel, LumberMillModel, WaterWellModel, FactoryModel, overview) {
     var Foreman;
     Foreman = Backbone.Model.extend({
       removeBuilding: function(tileModel) {
-        var buildingModel, foundBuildings, x, y;
+        var buildingModel, x, y;
         x = tileModel.get("x");
         y = tileModel.get("y");
-        foundBuildings = buildings.where({
+        buildingModel = _.first(buildings.where({
           x: x,
           y: y
-        });
-        buildingModel = _.first(foundBuildings);
+        }));
         tileModel.set("isOccupied", false);
         this.informNeighbors(buildingModel);
         buildings.sync("delete", buildingModel);
@@ -34,6 +33,24 @@
         this.assignIdleWorkers();
         buildings.sync("create", roadModel);
         tileModel.set("isOccupied", true);
+        return this.informNeighbors(tileModel);
+      },
+      putExportCenter: function(tileModel) {
+        var exportCenterModel, x, y;
+        x = tileModel.get("x");
+        y = tileModel.get("y");
+        exportCenterModel = new ExportCenterModel({
+          x: x,
+          y: y
+        });
+        /*
+        unless overview.purchase ExportCenterModel.get "resources"
+          return
+        */
+
+        buildings.add(exportCenterModel);
+        tileModel.set("isOccupied", true);
+        buildings.sync("create", exportCenterModel);
         return this.informNeighbors(tileModel);
       },
       putFarm: function(tileModel) {
@@ -69,7 +86,6 @@
         */
 
         buildings.add(homeModel);
-        buildings.sync("create", homeModel);
         tileModel.set("isOccupied", true);
         this.informNeighbors(tileModel);
         creatureModel = new CreatureModel({
@@ -80,6 +96,7 @@
         creatureModel.set("homeFk", homeModel.get("id"));
         creatures.sync("create", creatureModel);
         homeModel.set("creatureFk", creatureModel.get("id"));
+        buildings.sync("create", homeModel);
         return this.findJob(creatureModel);
       },
       putMine: function(tileModel) {

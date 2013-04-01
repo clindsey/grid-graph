@@ -9,4 +9,4 @@ define [
     backgroundPositionY: -272
 
     calculateBackgroundPosition: ->
-      @backgroundPositionX = 0 - 32 - (@model.get("stage") * 16)
+      @backgroundPositionX = 0 - 32 - (3 * 16)
