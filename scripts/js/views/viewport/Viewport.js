@@ -44,11 +44,13 @@
         return this;
       },
       onIntervalTick: function() {
-        try {
-          return creatures.invoke("trigger", "tick");
-        } catch (err) {
-          return console.log("machine.js state tick err:", err);
-        }
+        return creatures.invoke("trigger", "tick");
+        /*
+        try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
+        catch err
+          console.log "machine.js state tick err:", err
+        */
+
       },
       onClick: function(jqEvent) {
         if (this.options.toolbarView.activeContext === "move") {
@@ -137,6 +139,7 @@
           if (workSite != null) {
             workSite.set("workerFk", void 0);
             buildings.sync("update", workSite);
+            foremanModel.findWorker(workSite);
           }
         }
         creatureModel = _.first(creatures.where({
@@ -144,7 +147,8 @@
         }));
         if (creatureModel != null) {
           creatureModel.set("workSiteFk", void 0);
-          return creatures.sync("update", creatureModel);
+          creatures.sync("update", creatureModel);
+          return foremanModel.findJob(creatureModel);
         }
       },
       onCreaturesReset: function() {
