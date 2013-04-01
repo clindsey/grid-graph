@@ -13,6 +13,6 @@ define [
         food: 10
         metal: 20
       production:
-        wood: 10
+        wood: 5
         food: 0
         metal: 0

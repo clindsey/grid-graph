@@ -10,6 +10,8 @@ define [
       "models/Foreman"
       "models/buildings/Home"
       "views/buildings/Home"
+      "models/buildings/ExportCenter"
+      "views/buildings/ExportCenter"
       "models/buildings/Farm"
       "views/buildings/Farm"
       "models/buildings/Road"
@@ -37,6 +39,8 @@ define [
       foremanModel,
       HomeModel,
       HomeView,
+      ExportCenterModel,
+      ExportCenterView,
       FarmModel,
       FarmView,
       RoadModel,
@@ -125,6 +129,9 @@ define [
           ""
         when "road"
           foremanModel.putRoad tileModel
+
+        when "export center"
+          foremanModel.putExportCenter tileModel
 
         when "home"
           foremanModel.putHome tileModel
@@ -223,6 +230,8 @@ define [
         switch buildingModel.get "type"
           when "Home"
             model = new HomeModel buildingModel.attributes
+          when "ExportCenter"
+            model = new ExportCenterModel buildingModel.attributes
           when "Farm"
             model = new FarmModel buildingModel.attributes
           when "Road"
@@ -256,6 +265,8 @@ define [
       switch buildingModel.get "type"
         when "Home"
           buildingView = new HomeView model: buildingModel
+        when "ExportCenter"
+          buildingView = new ExportCenterView model: buildingModel
         when "Farm"
           buildingView = new FarmView model: buildingModel
         when "Road"

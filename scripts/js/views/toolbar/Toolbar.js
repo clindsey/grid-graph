@@ -11,6 +11,7 @@
         "click .btn": "onBtnClick",
         "click .dropdown-btn": "onDropdownBtnClick",
         "click .dropdown-menu .road-btn": "onRoadBtnClick",
+        "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick",
         "click .dropdown-menu .home-btn": "onHomeBtnClick",
         "click .dropdown-menu .farm-btn": "onFarmBtnClick",
         "click .dropdown-menu .mine-btn": "onMineBtnClick",
@@ -25,6 +26,10 @@
         "road": {
           icon: "road",
           label: "Road"
+        },
+        "export center": {
+          icon: "share",
+          label: "Export Center"
         },
         "home": {
           icon: "home",
@@ -97,6 +102,10 @@
       onHomeBtnClick: function() {
         this.activeContext = "home";
         return this.menuOption = "home";
+      },
+      onExportCenterBtnClick: function() {
+        this.activeContext = "export center";
+        return this.menuOption = "export center";
       },
       onFarmBtnClick: function() {
         this.activeContext = "farm";

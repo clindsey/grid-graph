@@ -3,6 +3,7 @@ define [
       "models/heightmap/Heightmap"
       "models/entities/Creature"
       "collections/Buildings"
+      "models/buildings/ExportCenter"
       "models/buildings/Farm"
       "models/buildings/Road"
       "models/buildings/Home"
@@ -17,6 +18,7 @@ define [
       heightmapModel,
       CreatureModel,
       buildings,
+      ExportCenterModel,
       FarmModel,
       RoadModel,
       HomeModel,
@@ -31,11 +33,9 @@ define [
       x = tileModel.get "x"
       y = tileModel.get "y"
 
-      foundBuildings = buildings.where
+      buildingModel = _.first buildings.where
         x: x
         y: y
-
-      buildingModel = _.first foundBuildings
 
       tileModel.set "isOccupied", false
 
@@ -65,6 +65,27 @@ define [
       tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
+
+    putExportCenter: (tileModel) ->
+      x = tileModel.get "x"
+      y = tileModel.get "y"
+
+      exportCenterModel = new ExportCenterModel x: x, y: y
+
+      ###
+      unless overview.purchase ExportCenterModel.get "resources"
+        return
+      ###
+
+      buildings.add exportCenterModel
+
+      tileModel.set "isOccupied", true
+
+      buildings.sync "create", exportCenterModel
+
+      @informNeighbors tileModel
+
+      #@findWorker lumberMillModel
 
     putFarm: (tileModel) ->
       x = tileModel.get "x"
@@ -100,8 +121,6 @@ define [
 
       buildings.add homeModel
 
-      buildings.sync "create", homeModel
-
       tileModel.set "isOccupied", true
 
       @informNeighbors tileModel
@@ -115,6 +134,8 @@ define [
       creatures.sync "create", creatureModel
 
       homeModel.set "creatureFk", creatureModel.get "id"
+
+      buildings.sync "create", homeModel
 
       @findJob creatureModel
 

@@ -15,4 +15,4 @@ define [
       production:
         wood: 0
         food: 0
-        metal: 10
+        metal: 5

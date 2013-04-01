@@ -19,6 +19,22 @@
   -webkit-animation: walkSouth 1s steps(4) infinite;
 }
 
+.carry-east {
+  -webkit-animation: carryEast 1s steps(4) infinite;
+}
+
+.carry-west {
+  -webkit-animation: carryWest 1s steps(4) infinite;
+}
+
+.carry-north {
+  -webkit-animation: carryNorth 1s steps(4) infinite;
+}
+
+.carry-south {
+  -webkit-animation: carrySouth 1s steps(4) infinite;
+}
+
 .sleep-east {
   -webkit-animation: sleepEast 1s steps(2) infinite;
 }
@@ -35,20 +51,20 @@
   -webkit-animation: sleepSouth 1s steps(2) infinite;
 }
 
-.water-east {
-  -webkit-animation: waterEast 1s steps(2) infinite;
+.work-east {
+  -webkit-animation: workEast 1s steps(2) infinite;
 }
 
-.water-west {
-  -webkit-animation: waterWest 1s steps(2) infinite;
+.work-west {
+  -webkit-animation: workWest 1s steps(2) infinite;
 }
 
-.water-north {
-  -webkit-animation: waterNorth 1s steps(2) infinite;
+.work-north {
+  -webkit-animation: workNorth 1s steps(2) infinite;
 }
 
-.water-south {
-  -webkit-animation: waterSouth 1s steps(2) infinite;
+.work-south {
+  -webkit-animation: workSouth 1s steps(2) infinite;
 }
 
 @-webkit-keyframes walkEast {
@@ -111,22 +127,22 @@
   to { background-position: -128px -320px; }
 }
 
-@-webkit-keyframes waterEast {
+@-webkit-keyframes workEast {
   from { background-position: -128px -320px; }
   to { background-position: -160px -320px; }
 }
 
-@-webkit-keyframes waterNorth {
+@-webkit-keyframes workNorth {
   from { background-position: -160px -320px; }
   to { background-position: -192px -320px; }
 }
 
-@-webkit-keyframes waterWest {
+@-webkit-keyframes workWest {
   from { background-position: -192px -320px; }
   to { background-position: -224px -320px; }
 }
 
-@-webkit-keyframes waterSouth {
+@-webkit-keyframes workSouth {
   from { background-position: -224px -320px; }
   to { background-position: -256px -320px; }
 }
