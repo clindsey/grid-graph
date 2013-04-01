@@ -17,8 +17,7 @@
           });
           planetModels.push(planet);
         }
-        planets.reset(planetModels);
-        return planets.first().activate();
+        return planets.reset(planetModels);
       }
     });
   });

@@ -61,8 +61,6 @@ define [
     initialize: ->
       _.bindAll @, "onMapTileClick"
 
-      @render()
-
       @listenTo viewportModel, "moved", @onViewportMoved
       @listenTo creatures, "add", @onCreatureAdded
       @listenTo buildings, "add", @onBuildingAdded
@@ -70,7 +68,11 @@ define [
       @listenTo buildings, "reset", @onBuildingsReset
       @listenTo creatures, "reset", @onCreaturesReset
 
+      @render()
+
     render: ->
+      @$el.empty()
+
       @$el.css
         width: viewportModel.get("width") * 16
         height: viewportModel.get("height") * 16
@@ -88,15 +90,20 @@ define [
 
         @grid.push viewportTileView
 
-      interval = (time, cb) -> setInterval cb, time
+      interval = (time, cb) ->
+        clearTimeout window.timeout
 
-      interval 1000 / 1, =>
-        try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
-          creatures.invoke "trigger", "tick"
-        catch err
-          console.log "machine.js state tick err:", err
+        window.timeout = setInterval cb, time
+
+      interval 1000 / 1, @onIntervalTick
 
       @
+
+    onIntervalTick: ->
+      try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
+        creatures.invoke "trigger", "tick"
+      catch err
+        console.log "machine.js state tick err:", err
 
     onClick: (jqEvent) ->
       if @options.toolbarView.activeContext is "move"
