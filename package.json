@@ -2,6 +2,7 @@
   name: "grid-graph",
   version "0.0.1",
   dependencies: {
+    "r.js": ">=2.1.5",
     "coffee-script": ">=1.6.1",
     "jitter": ">=1.1.1"
   }
