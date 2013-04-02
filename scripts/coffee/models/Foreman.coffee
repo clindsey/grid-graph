@@ -129,13 +129,15 @@ define [
 
       creatures.add creatureModel
 
+      buildings.sync "create", homeModel
+
       creatureModel.set "homeFk", homeModel.get "id"
 
       creatures.sync "create", creatureModel
 
       homeModel.set "creatureFk", creatureModel.get "id"
 
-      buildings.sync "create", homeModel
+      buildings.sync "update", homeModel
 
       @findJob creatureModel
 
@@ -235,15 +237,20 @@ define [
       if availableJobs.length is 0
         return
 
-      _.some availableJobs, (workSiteModel) =>
+      targetJob = undefined
+
+      _.each availableJobs, (workSiteModel) =>
         path = unemployedCreature.findPath workSiteModel
 
-        if path.length is 0
-          return false
+        if path.length isnt 0
+          unless shortestPath?
+            shortestPath = path.length
 
-        @assignWorkerToSite unemployedCreature, workSiteModel
+          if path.length <= shortestPath
+            targetJob = workSiteModel
 
-        true
+      if targetJob?
+        @assignWorkerToSite unemployedCreature, targetJob
 
     assignIdleWorkers: ->
       unemployedCreatures = creatures.where
@@ -252,25 +259,8 @@ define [
       if unemployedCreatures.length is 0
         return
 
-      _.some unemployedCreatures, (unemployedCreature) =>
-        availableJobs = buildings.where
-          needsWorker: true
-          workerFk: undefined
-
-        if availableJobs.length is 0
-          return true
-
-        _.some availableJobs, (workSiteModel) =>
-          path = unemployedCreature.findPath workSiteModel
-
-          if path.length is 0
-            return false
-
-          @assignWorkerToSite unemployedCreature, workSiteModel
-
-          true
-
-        false
+      _.each unemployedCreatures, (unemployedCreature) =>
+        @findJob unemployedCreature
 
     findWorker: (workSiteModel) ->
       unemployedCreatures = creatures.where
@@ -279,15 +269,20 @@ define [
       if unemployedCreatures.length is 0
         return
 
-      _.some unemployedCreatures, (unemployedCreature) =>
+      targetEmployee = undefined
+
+      _.each unemployedCreatures, (unemployedCreature) =>
         path = unemployedCreature.findPath workSiteModel
 
-        if path.length is 0
-          return false
+        if path.length isnt 0
+          unless shortestPath?
+            shortestPath = path.length
 
-        @assignWorkerToSite unemployedCreature, workSiteModel
+          if path.length <= shortestPath
+            targetEmployee = unemployedCreature
 
-        true
+      if targetEmployee?
+        @assignWorkerToSite targetEmployee, workSiteModel
 
     informNeighbors: (buildingModel) ->
       x = buildingModel.get "x"

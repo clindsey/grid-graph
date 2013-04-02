@@ -104,10 +104,12 @@ define [
       @
 
     onIntervalTick: ->
+      creatures.invoke "trigger", "tick"
+      ###
       try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
-        creatures.invoke "trigger", "tick"
       catch err
         console.log "machine.js state tick err:", err
+      ###
 
     onClick: (jqEvent) ->
       if @options.toolbarView.activeContext is "move"
@@ -206,6 +208,8 @@ define [
 
           buildings.sync "update", workSite
 
+          foremanModel.findWorker workSite
+
       creatureModel = _.first creatures.where # creature works here 
         id: buildingModel.get "workerFk"
 
@@ -213,6 +217,8 @@ define [
         creatureModel.set "workSiteFk", undefined
 
         creatures.sync "update", creatureModel
+
+        foremanModel.findJob creatureModel
 
     onCreaturesReset: ->
       creatures.each (creature) =>
