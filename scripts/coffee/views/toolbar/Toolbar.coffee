@@ -17,7 +17,7 @@ define [
     template: _.template toolbarTemplate
 
     events:
-      "click .btn": "onBtnClick"
+      "click .btn-radio": "onBtnClick"
       "click .dropdown-btn": "onDropdownBtnClick"
       "click .dropdown-menu .road-btn": "onRoadBtnClick"
       "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick"
@@ -30,6 +30,7 @@ define [
       "click .move-btn": "onMoveBtnClick"
       "click .remove-btn": "onRemoveBtnClick"
       "click .dropdown-menu a": "onDropdownItemClick"
+      "click .space-map-btn": "onSpaceMapBtnClick"
 
     contextIconLookup:
       "road":
@@ -98,6 +99,9 @@ define [
       @$(".btn").removeClass "active btn-primary"
 
       $(jqEvent.currentTarget).addClass "active btn-primary"
+
+    onSpaceMapBtnClick: ->
+      @trigger "toggleSpaceMap"
 
     onMoveBtnClick: ->
       @activeContext = "move"

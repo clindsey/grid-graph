@@ -25,6 +25,8 @@ define [
     el: document
 
     initialize: ->
+      isPlanetListOpen = false
+
       toolbarView = new ToolbarView
 
       galaxy = new GalaxyModel
@@ -34,7 +36,7 @@ define [
       viewport = new ViewportView
         toolbarView: toolbarView
 
-      new PlanetListView
+      planetListView = new PlanetListView
 
       @listenTo buildings, "reset", ->
         viewport.render()
@@ -44,8 +46,16 @@ define [
       @listenTo creatures, "reset", ->
 
       @listenTo planets, "active", (activePlanet) ->
+        isPlanetListOpen = false
+
         buildings.fetch()
 
       galaxy.generate()
 
       planets.first().activate()
+
+      @listenTo toolbarView, "toggleSpaceMap", ->
+        unless isPlanetListOpen
+          planetListView.render()
+
+        isPlanetListOpen = true

@@ -8,7 +8,7 @@
       menuOption: "road",
       template: _.template(toolbarTemplate),
       events: {
-        "click .btn": "onBtnClick",
+        "click .btn-radio": "onBtnClick",
         "click .dropdown-btn": "onDropdownBtnClick",
         "click .dropdown-menu .road-btn": "onRoadBtnClick",
         "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick",
@@ -20,7 +20,8 @@
         "click .dropdown-menu .factory-btn": "onFactoryBtnClick",
         "click .move-btn": "onMoveBtnClick",
         "click .remove-btn": "onRemoveBtnClick",
-        "click .dropdown-menu a": "onDropdownItemClick"
+        "click .dropdown-menu a": "onDropdownItemClick",
+        "click .space-map-btn": "onSpaceMapBtnClick"
       },
       contextIconLookup: {
         "road": {
@@ -88,6 +89,9 @@
         }
         this.$(".btn").removeClass("active btn-primary");
         return $(jqEvent.currentTarget).addClass("active btn-primary");
+      },
+      onSpaceMapBtnClick: function() {
+        return this.trigger("toggleSpaceMap");
       },
       onMoveBtnClick: function() {
         return this.activeContext = "move";

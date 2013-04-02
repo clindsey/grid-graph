@@ -10,8 +10,8 @@ define [
     defaults:
       x: 0
       y: 0
-      width: 21
-      height: 21
+      width: 32
+      height: 18
 
     initialize: ->
       @listenTo @, "change:x", @updateTiles

@@ -5,7 +5,8 @@
     return AppView = Backbone.View.extend({
       el: document,
       initialize: function() {
-        var galaxy, toolbarView, viewport;
+        var galaxy, isPlanetListOpen, planetListView, toolbarView, viewport;
+        isPlanetListOpen = false;
         toolbarView = new ToolbarView;
         galaxy = new GalaxyModel({
           seed: 20130401,
@@ -14,17 +15,24 @@
         viewport = new ViewportView({
           toolbarView: toolbarView
         });
-        new PlanetListView;
+        planetListView = new PlanetListView;
         this.listenTo(buildings, "reset", function() {
           viewport.render();
           return creatures.fetch();
         });
         this.listenTo(creatures, "reset", function() {});
         this.listenTo(planets, "active", function(activePlanet) {
+          isPlanetListOpen = false;
           return buildings.fetch();
         });
         galaxy.generate();
-        return planets.first().activate();
+        planets.first().activate();
+        return this.listenTo(toolbarView, "toggleSpaceMap", function() {
+          if (!isPlanetListOpen) {
+            planetListView.render();
+          }
+          return isPlanetListOpen = true;
+        });
       }
     });
   });
