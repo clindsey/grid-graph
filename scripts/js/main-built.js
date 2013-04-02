@@ -14265,10 +14265,11 @@ define("Machine", function(){});
           y: y
         });
         creatures.add(creatureModel);
+        buildings.sync("create", homeModel);
         creatureModel.set("homeFk", homeModel.get("id"));
         creatures.sync("create", creatureModel);
         homeModel.set("creatureFk", creatureModel.get("id"));
-        buildings.sync("create", homeModel);
+        buildings.sync("update", homeModel);
         return this.findJob(creatureModel);
       },
       putMine: function(tileModel) {
@@ -14352,7 +14353,7 @@ define("Machine", function(){});
         return buildings.sync("update", workSiteModel);
       },
       findJob: function(unemployedCreature) {
-        var availableJobs,
+        var availableJobs, targetJob,
           _this = this;
         availableJobs = buildings.where({
           needsWorker: true,
@@ -14361,15 +14362,22 @@ define("Machine", function(){});
         if (availableJobs.length === 0) {
           return;
         }
-        return _.some(availableJobs, function(workSiteModel) {
-          var path;
+        targetJob = void 0;
+        _.each(availableJobs, function(workSiteModel) {
+          var path, shortestPath;
           path = unemployedCreature.findPath(workSiteModel);
-          if (path.length === 0) {
-            return false;
+          if (path.length !== 0) {
+            if (typeof shortestPath === "undefined" || shortestPath === null) {
+              shortestPath = path.length;
+            }
+            if (path.length <= shortestPath) {
+              return targetJob = workSiteModel;
+            }
           }
-          _this.assignWorkerToSite(unemployedCreature, workSiteModel);
-          return true;
         });
+        if (targetJob != null) {
+          return this.assignWorkerToSite(unemployedCreature, targetJob);
+        }
       },
       assignIdleWorkers: function() {
         var unemployedCreatures,
@@ -14380,29 +14388,12 @@ define("Machine", function(){});
         if (unemployedCreatures.length === 0) {
           return;
         }
-        return _.some(unemployedCreatures, function(unemployedCreature) {
-          var availableJobs;
-          availableJobs = buildings.where({
-            needsWorker: true,
-            workerFk: void 0
-          });
-          if (availableJobs.length === 0) {
-            return true;
-          }
-          _.some(availableJobs, function(workSiteModel) {
-            var path;
-            path = unemployedCreature.findPath(workSiteModel);
-            if (path.length === 0) {
-              return false;
-            }
-            _this.assignWorkerToSite(unemployedCreature, workSiteModel);
-            return true;
-          });
-          return false;
+        return _.each(unemployedCreatures, function(unemployedCreature) {
+          return _this.findJob(unemployedCreature);
         });
       },
       findWorker: function(workSiteModel) {
-        var unemployedCreatures,
+        var targetEmployee, unemployedCreatures,
           _this = this;
         unemployedCreatures = creatures.where({
           workSiteFk: void 0
@@ -14410,15 +14401,22 @@ define("Machine", function(){});
         if (unemployedCreatures.length === 0) {
           return;
         }
-        return _.some(unemployedCreatures, function(unemployedCreature) {
-          var path;
+        targetEmployee = void 0;
+        _.each(unemployedCreatures, function(unemployedCreature) {
+          var path, shortestPath;
           path = unemployedCreature.findPath(workSiteModel);
-          if (path.length === 0) {
-            return false;
+          if (path.length !== 0) {
+            if (typeof shortestPath === "undefined" || shortestPath === null) {
+              shortestPath = path.length;
+            }
+            if (path.length <= shortestPath) {
+              return targetEmployee = unemployedCreature;
+            }
           }
-          _this.assignWorkerToSite(unemployedCreature, workSiteModel);
-          return true;
         });
+        if (targetEmployee != null) {
+          return this.assignWorkerToSite(targetEmployee, workSiteModel);
+        }
       },
       informNeighbors: function(buildingModel) {
         var neighboringTiles, x, y;
@@ -14639,11 +14637,13 @@ define("Machine", function(){});
         return this;
       },
       onIntervalTick: function() {
-        try {
-          return creatures.invoke("trigger", "tick");
-        } catch (err) {
-          return console.log("machine.js state tick err:", err);
-        }
+        return creatures.invoke("trigger", "tick");
+        /*
+        try # extremely unhappy about this, absolutely no good reason to ever use try...catch, just shows i have no idea whats happening in my code
+        catch err
+          console.log "machine.js state tick err:", err
+        */
+
       },
       onClick: function(jqEvent) {
         if (this.options.toolbarView.activeContext === "move") {
@@ -14732,6 +14732,7 @@ define("Machine", function(){});
           if (workSite != null) {
             workSite.set("workerFk", void 0);
             buildings.sync("update", workSite);
+            foremanModel.findWorker(workSite);
           }
         }
         creatureModel = _.first(creatures.where({
@@ -14739,7 +14740,8 @@ define("Machine", function(){});
         }));
         if (creatureModel != null) {
           creatureModel.set("workSiteFk", void 0);
-          return creatures.sync("update", creatureModel);
+          creatures.sync("update", creatureModel);
+          return foremanModel.findJob(creatureModel);
         }
       },
       onCreaturesReset: function() {
