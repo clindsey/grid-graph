@@ -5,6 +5,4 @@ define [
 
   Home = Backbone.View.extend
     backgroundPositionX: 0
-    backgroundPositionY:  -272
-
-    render: ->
+    backgroundPositionY: -272 * 2

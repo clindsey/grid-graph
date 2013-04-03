@@ -5,5 +5,5 @@ define [
       WorkableView) ->
 
   Mine = WorkableView.extend
-    backgroundPositionX: -16
-    backgroundPositionY: -272
+    backgroundPositionX: -16 * 2
+    backgroundPositionY: -272 * 2

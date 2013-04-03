@@ -37,8 +37,8 @@ define [
         if type is 0
           @$el.addClass "water-tile"
 
-        @backgroundPositionX = 0 - ((type % 16) * 16)
-        @backgroundPositionY = 0 - (~~(type / 16) * 16)
+        @backgroundPositionX = 0 - ((type % 16) * 32)
+        @backgroundPositionY = 0 - (~~(type / 16) * 32)
 
     setListeners: ->
       @listenTo @model, "change:isOccupied", @render

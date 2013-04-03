@@ -7,20 +7,20 @@ define [
       viewportTiles) ->
 
   Road = Backbone.View.extend
-    backgroundPositionX: 0
-    backgroundPositionY: -256
+    backgroundPositionX: 0 * 2
+    backgroundPositionY: -256 * 2
 
     initialize: ->
       @listenTo @model, "neighborChanged", @onNeighborChanged
 
       roadTileType = @calculateRoadTile()
 
-      @backgroundPositionX = 0 - roadTileType * 16
+      @backgroundPositionX = 0 - roadTileType * (16 * 2)
 
     onNeighborChanged: ->
       roadTileType = @calculateRoadTile()
 
-      @backgroundPositionX = 0 - roadTileType * 16
+      @backgroundPositionX = 0 - roadTileType * (16 * 2)
 
       mapTile = _.first viewportTiles.where
         x: @model.get "x"

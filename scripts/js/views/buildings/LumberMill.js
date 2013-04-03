@@ -3,8 +3,8 @@
   define(["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var LumberMill;
     return LumberMill = WorkableView.extend({
-      backgroundPositionX: -208,
-      backgroundPositionY: -272
+      backgroundPositionX: -208 * 2,
+      backgroundPositionY: -272 * 2
     });
   });
 

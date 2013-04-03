@@ -5,5 +5,5 @@ define [
       WorkableView) ->
 
   LumberMill = WorkableView.extend
-    backgroundPositionX: -208
-    backgroundPositionY: -272
+    backgroundPositionX: -208 * 2
+    backgroundPositionY: -272 * 2

@@ -31,8 +31,8 @@
       },
       onStep: function(vector) {
         this.$el.css({
-          "margin-left": 0 - vector[0] * 16,
-          "margin-top": 0 - vector[1] * 16
+          "margin-left": 0 - vector[0] * (16 * 2),
+          "margin-top": 0 - vector[1] * (16 * 2)
         });
         return this.$el.animate({
           "margin-left": 0,

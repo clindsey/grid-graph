@@ -27,8 +27,8 @@
           if (type === 0) {
             this.$el.addClass("water-tile");
           }
-          this.backgroundPositionX = 0 - ((type % 16) * 16);
-          return this.backgroundPositionY = 0 - (~~(type / 16) * 16);
+          this.backgroundPositionX = 0 - ((type % 16) * 32);
+          return this.backgroundPositionY = 0 - (~~(type / 16) * 32);
         }
       },
       setListeners: function() {
