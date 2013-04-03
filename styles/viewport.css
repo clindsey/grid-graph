@@ -4,7 +4,7 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .map-tile {
@@ -14,7 +14,7 @@
   color: #fff;
   text-align: center;
   text-shadow: 1px 1px 0 #000;
-  background-image: url(../images/tileset_terra.png?bust=240);
+  background-image: url(../images/tileset_space.png?bust=5);
   cursor: pointer;
 }
 

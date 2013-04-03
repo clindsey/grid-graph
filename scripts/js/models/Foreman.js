@@ -181,7 +181,7 @@
         return buildings.sync("update", workSiteModel);
       },
       findJob: function(unemployedCreature) {
-        var availableJobs, targetJob,
+        var availableJobs, shortestPath, targetJob,
           _this = this;
         availableJobs = buildings.where({
           needsWorker: true,
@@ -191,15 +191,15 @@
           return;
         }
         targetJob = void 0;
+        shortestPath = void 0;
         _.each(availableJobs, function(workSiteModel) {
-          var path, shortestPath;
+          var path;
           path = unemployedCreature.findPath(workSiteModel);
           if (path.length !== 0) {
-            if (typeof shortestPath === "undefined" || shortestPath === null) {
-              shortestPath = path.length;
-            }
+            shortestPath || (shortestPath = path.length);
             if (path.length <= shortestPath) {
-              return targetJob = workSiteModel;
+              targetJob = workSiteModel;
+              return shortestPath = path.length;
             }
           }
         });
@@ -221,7 +221,7 @@
         });
       },
       findWorker: function(workSiteModel) {
-        var targetEmployee, unemployedCreatures,
+        var shortestPath, targetEmployee, unemployedCreatures,
           _this = this;
         unemployedCreatures = creatures.where({
           workSiteFk: void 0
@@ -230,15 +230,15 @@
           return;
         }
         targetEmployee = void 0;
+        shortestPath = void 0;
         _.each(unemployedCreatures, function(unemployedCreature) {
-          var path, shortestPath;
+          var path;
           path = unemployedCreature.findPath(workSiteModel);
           if (path.length !== 0) {
-            if (typeof shortestPath === "undefined" || shortestPath === null) {
-              shortestPath = path.length;
-            }
+            shortestPath || (shortestPath = path.length);
             if (path.length <= shortestPath) {
-              return targetEmployee = unemployedCreature;
+              targetEmployee = unemployedCreature;
+              return shortestPath = path.length;
             }
           }
         });
