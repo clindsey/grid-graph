@@ -12,16 +12,13 @@ define [
     events:
       "click a": "onListItemClick"
 
-    initialize: ->
-      @listenTo @model, "active", @onActive
-
     render: ->
       @$el.html @template @model.toJSON()
 
-      @
+      if @options.isActive
+        @$el.addClass "active"
 
-    onActive: ->
-      @$el.addClass "active"
+      @
 
     onListItemClick: (jqEvent) ->
       jqEvent.preventDefault()

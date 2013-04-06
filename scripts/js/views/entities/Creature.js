@@ -11,7 +11,7 @@
         this.listenTo(this.model, "step", this.onStep);
         this.currentState = this.model.get("stateIdentifier");
         this.currentDirection = this.model.get("direction");
-        return this.setClassName;
+        return this.setClassName();
       },
       onStateChange: function() {
         this.removeClassName();
@@ -31,8 +31,8 @@
       },
       onStep: function(vector) {
         this.$el.css({
-          "margin-left": 0 - vector[0] * 16,
-          "margin-top": 0 - vector[1] * 16
+          "margin-left": 0 - vector[0] * (16 * 2),
+          "margin-top": 0 - vector[1] * (16 * 2)
         });
         return this.$el.animate({
           "margin-left": 0,

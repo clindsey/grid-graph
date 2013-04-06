@@ -238,16 +238,17 @@ define [
         return
 
       targetJob = undefined
+      shortestPath = undefined
 
       _.each availableJobs, (workSiteModel) =>
         path = unemployedCreature.findPath workSiteModel
 
         if path.length isnt 0
-          unless shortestPath?
-            shortestPath = path.length
+          shortestPath ||= path.length
 
           if path.length <= shortestPath
             targetJob = workSiteModel
+            shortestPath = path.length
 
       if targetJob?
         @assignWorkerToSite unemployedCreature, targetJob
@@ -270,16 +271,17 @@ define [
         return
 
       targetEmployee = undefined
+      shortestPath = undefined
 
       _.each unemployedCreatures, (unemployedCreature) =>
         path = unemployedCreature.findPath workSiteModel
 
         if path.length isnt 0
-          unless shortestPath?
-            shortestPath = path.length
+          shortestPath ||= path.length
 
           if path.length <= shortestPath
             targetEmployee = unemployedCreature
+            shortestPath = path.length
 
       if targetEmployee?
         @assignWorkerToSite targetEmployee, workSiteModel

@@ -3,18 +3,18 @@
   define(["models/heightmap/Heightmap", "collections/ViewportTiles", "Backbone"], function(heightmapModel, viewportTiles) {
     var Road;
     return Road = Backbone.View.extend({
-      backgroundPositionX: 0,
-      backgroundPositionY: -256,
+      backgroundPositionX: 0 * 2,
+      backgroundPositionY: -544,
       initialize: function() {
         var roadTileType;
         this.listenTo(this.model, "neighborChanged", this.onNeighborChanged);
         roadTileType = this.calculateRoadTile();
-        return this.backgroundPositionX = 0 - roadTileType * 16;
+        return this.backgroundPositionX = 0 - roadTileType * (16 * 2);
       },
       onNeighborChanged: function() {
         var mapTile, roadTileType;
         roadTileType = this.calculateRoadTile();
-        this.backgroundPositionX = 0 - roadTileType * 16;
+        this.backgroundPositionX = 0 - roadTileType * (16 * 2);
         mapTile = _.first(viewportTiles.where({
           x: this.model.get("x"),
           y: this.model.get("y")

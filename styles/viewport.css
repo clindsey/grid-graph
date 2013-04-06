@@ -4,38 +4,36 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
-  height: 336px;
-  width: 336px;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: #fff;
 }
 
 .map-tile {
   float: left;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
   color: #fff;
   text-align: center;
   text-shadow: 1px 1px 0 #000;
-  background-image: url(../images/tileset_terra.png?bust=240);
+  background-image: url(../images/tileset_gather.png?bust=9);
   cursor: pointer;
 }
 
 .map-tile:hover:after {
   content: " ";
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
   position: absolute;
   background-color: rgba(0, 0, 0, 0.3);
-  margin-left: -8px;
-  border-radius: 4px;
+  margin-left: -16px;
+  border-radius: 8px;
 }
 
 .entity-tile {
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
   background-position: 0 0;
-  background-image: url(../images/tileset_terra.png?bust=123);
+  background-image: url(../images/tileset_gather.png?bust=9);
 }
 
 .water-tile {
@@ -43,6 +41,6 @@
 }
 
 @-webkit-keyframes waterWaves {
-  from { background-position: -224px -272px; }
-  to { background-position: -256px -272px; }
+  from { background-position: -448px -544px; }
+  to { background-position: -512px -544px; }
 }

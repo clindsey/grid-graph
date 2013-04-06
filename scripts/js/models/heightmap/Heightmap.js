@@ -23,8 +23,9 @@
         return this.set("data", this.processTiles(heightmap));
       },
       processTiles: function(heightmap) {
-        var a, b, c, cx, cy, d, data, e, f, g, h, mapTileModel, n, ne, newMapTiles, nw, o, s, se, sw, w, x, xl, y, yl, _i, _j, _ref, _ref1,
+        var a, b, c, cx, cy, d, data, e, f, g, h, mapTileModel, n, ne, newMapTiles, nw, o, rnd, s, se, sw, w, x, xl, y, yl, _i, _j, _ref, _ref1,
           _this = this;
+        rnd = new Alea(this.get("SEED"));
         data = [];
         newMapTiles = [];
         xl = this.get("worldTileWidth");
@@ -63,7 +64,8 @@
             mapTileModel = new MapTileModel({
               type: s,
               x: x,
-              y: y
+              y: y,
+              seed: rnd()
             });
             data[y][x] = mapTileModel;
             newMapTiles.push(mapTileModel);

@@ -65,5 +65,5 @@ define [
         offsetY += worldHeight
 
       @$el.css
-        left: (x + offsetX) * 16
-        top: (y + offsetY) * 16
+        left: (x + offsetX) * (16 * 2)
+        top: (y + offsetY) * (16 * 2)

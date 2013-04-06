@@ -22,8 +22,8 @@
           _this = this;
         this.$el.empty();
         this.$el.css({
-          width: viewportModel.get("width") * 16,
-          height: viewportModel.get("height") * 16
+          width: viewportModel.get("width") * (16 * 2),
+          height: viewportModel.get("height") * (16 * 2)
         });
         this.grid = [];
         viewportTiles.each(function(mapTileModel) {
@@ -96,8 +96,8 @@
         var tileX, tileY, viewportHeight, viewportWidth, viewportX, viewportY, vx, vy;
         viewportWidth = viewportModel.get("width");
         viewportHeight = viewportModel.get("height");
-        tileX = ~~(jqEvent.target.offsetLeft / 16);
-        tileY = ~~(jqEvent.target.offsetTop / 16);
+        tileX = ~~(jqEvent.target.offsetLeft / (16 * 2));
+        tileY = ~~(jqEvent.target.offsetTop / (16 * 2));
         vx = tileX - ~~(viewportWidth / 2);
         vy = tileY - ~~(viewportHeight / 2);
         viewportX = viewportModel.get("x");

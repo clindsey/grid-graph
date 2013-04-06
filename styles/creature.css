@@ -1,148 +1,44 @@
-.creature-tile {
-  -webkit-animation: sleepSouth 1s steps(2) infinite;
+.entity-tile.creature-tile {
   pointer-events: none;
+  background-position: -64px -608px;
 }
 
-.walk-east {
-  -webkit-animation: walkEast 1s steps(4) infinite;
+.entity-tile.walk-north,
+.entity-tile.work-north {
+  background-position: -0px -608px;
 }
 
-.walk-west {
-  -webkit-animation: walkWest 1s steps(4) infinite;
+.entity-tile.walk-east,
+.entity-tile.work-east {
+  background-position: -32px -608px;
 }
 
-.walk-north {
-  -webkit-animation: walkNorth 1s steps(4) infinite;
+.entity-tile.walk-south,
+.entity-tile.work-south {
+  background-position: -64px -608px;
 }
 
-.walk-south {
-  -webkit-animation: walkSouth 1s steps(4) infinite;
+.entity-tile.walk-west,
+.entity-tile.work-west {
+  background-position: -96px -608px;
 }
 
-.carry-east {
-  -webkit-animation: carryEast 1s steps(4) infinite;
+.entity-tile.carry-north,
+.entity-tile.sleep-north {
+  background-position: -128px -608px;
 }
 
-.carry-west {
-  -webkit-animation: carryWest 1s steps(4) infinite;
+.entity-tile.carry-east,
+.entity-tile.sleep-east {
+  background-position: -160px -608px;
 }
 
-.carry-north {
-  -webkit-animation: carryNorth 1s steps(4) infinite;
+.entity-tile.carry-south,
+.entity-tile.sleep-south {
+  background-position: -192px -608px;
 }
 
-.carry-south {
-  -webkit-animation: carrySouth 1s steps(4) infinite;
-}
-
-.sleep-east {
-  -webkit-animation: sleepEast 1s steps(2) infinite;
-}
-
-.sleep-west {
-  -webkit-animation: sleepWest 1s steps(2) infinite;
-}
-
-.sleep-north {
-  -webkit-animation: sleepNorth 1s steps(2) infinite;
-}
-
-.sleep-south {
-  -webkit-animation: sleepSouth 1s steps(2) infinite;
-}
-
-.work-east {
-  -webkit-animation: workEast 1s steps(2) infinite;
-}
-
-.work-west {
-  -webkit-animation: workWest 1s steps(2) infinite;
-}
-
-.work-north {
-  -webkit-animation: workNorth 1s steps(2) infinite;
-}
-
-.work-south {
-  -webkit-animation: workSouth 1s steps(2) infinite;
-}
-
-@-webkit-keyframes walkEast {
-  from { background-position: 0 -288px; }
-  to { background-position: -64px -288px; }
-}
-
-@-webkit-keyframes walkNorth {
-  from { background-position: -64px -288px; }
-  to { background-position: -128px -288px; }
-}
-
-@-webkit-keyframes walkWest {
-  from { background-position: -128px -288px; }
-  to { background-position: -192px -288px; }
-}
-
-@-webkit-keyframes walkSouth {
-  from { background-position: -192px -288px; }
-  to { background-position: -256px -288px; }
-}
-
-@-webkit-keyframes carryEast {
-  from { background-position: 0 -304px; }
-  to { background-position: -64px -304px; }
-}
-
-@-webkit-keyframes carryNorth {
-  from { background-position: -64px -304px; }
-  to { background-position: -128px -304px; }
-}
-
-@-webkit-keyframes carryWest {
-  from { background-position: -128px -304px; }
-  to { background-position: -192px -304px; }
-}
-
-@-webkit-keyframes carrySouth {
-  from { background-position: -192px -304px; }
-  to { background-position: -256px -304px; }
-}
-
-@-webkit-keyframes sleepEast {
-  from { background-position: 0 -320px; }
-  to { background-position: -32px -320px; }
-}
-
-@-webkit-keyframes sleepNorth {
-  from { background-position: -32px -320px; }
-  to { background-position: -64px -320px; }
-}
-
-@-webkit-keyframes sleepWest {
-  from { background-position: -64px -320px; }
-  to { background-position: -96px -320px; }
-}
-
-@-webkit-keyframes sleepSouth {
-  from { background-position: -96px -320px; }
-  to { background-position: -128px -320px; }
-}
-
-@-webkit-keyframes workEast {
-  from { background-position: -128px -320px; }
-  to { background-position: -160px -320px; }
-}
-
-@-webkit-keyframes workNorth {
-  from { background-position: -160px -320px; }
-  to { background-position: -192px -320px; }
-}
-
-@-webkit-keyframes workWest {
-  from { background-position: -192px -320px; }
-  to { background-position: -224px -320px; }
-}
-
-@-webkit-keyframes workSouth {
-  from { background-position: -224px -320px; }
-  to { background-position: -256px -320px; }
+.entity-tile.carry-west,
+.entity-tile.sleep-west {
+  background-position: -224px -608px;
 }

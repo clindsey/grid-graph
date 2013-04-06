@@ -8,15 +8,12 @@
       events: {
         "click a": "onListItemClick"
       },
-      initialize: function() {
-        return this.listenTo(this.model, "active", this.onActive);
-      },
       render: function() {
         this.$el.html(this.template(this.model.toJSON()));
+        if (this.options.isActive) {
+          this.$el.addClass("active");
+        }
         return this;
-      },
-      onActive: function() {
-        return this.$el.addClass("active");
       },
       onListItemClick: function(jqEvent) {
         jqEvent.preventDefault();

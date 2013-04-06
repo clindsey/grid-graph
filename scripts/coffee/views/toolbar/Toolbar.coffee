@@ -17,7 +17,7 @@ define [
     template: _.template toolbarTemplate
 
     events:
-      "click .btn": "onBtnClick"
+      "click .btn-radio": "onBtnClick"
       "click .dropdown-btn": "onDropdownBtnClick"
       "click .dropdown-menu .road-btn": "onRoadBtnClick"
       "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick"
@@ -30,6 +30,7 @@ define [
       "click .move-btn": "onMoveBtnClick"
       "click .remove-btn": "onRemoveBtnClick"
       "click .dropdown-menu a": "onDropdownItemClick"
+      "click .space-map-btn": "onSpaceMapBtnClick"
 
     contextIconLookup:
       "road":
@@ -43,13 +44,13 @@ define [
         label: "House"
       "farm":
         icon: "leaf"
-        label: "Farm"
+        label: "Solar Collector"
       "mine":
         icon: "filter"
-        label: "Mine"
+        label: "Crystal Mine"
       "lumber mill":
         icon: "inbox"
-        label: "Lumber Mill"
+        label: "Gas Extractor"
       "water well":
         icon: "tint"
         label: "Water Well"
@@ -71,10 +72,12 @@ define [
 
       @$(".btn-group > .#{@activeContext}-btn").addClass "active btn-primary"
 
+      ###
       @$("[data-toggle=tooltip]").tooltip
         container: "body"
         placement: "left"
         html: true
+      ###
 
       @onResourcesChanged()
 
@@ -98,6 +101,9 @@ define [
       @$(".btn").removeClass "active btn-primary"
 
       $(jqEvent.currentTarget).addClass "active btn-primary"
+
+    onSpaceMapBtnClick: ->
+      @trigger "toggleSpaceMap"
 
     onMoveBtnClick: ->
       @activeContext = "move"

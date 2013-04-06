@@ -229,7 +229,7 @@ define [
 
           @set "path", path
 
-          @set "state", @get("state").warp("work")
+          @set "state", @state.warp("work")
           return false
 
         workX = workSiteModel.get "x"

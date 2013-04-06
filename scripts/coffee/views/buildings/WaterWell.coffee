@@ -5,5 +5,5 @@ define [
       WorkableView) ->
 
   WaterWell = WorkableView.extend
-    backgroundPositionX: -192
-    backgroundPositionY: -272
+    backgroundPositionX: -192 * 2
+    backgroundPositionY: -272 * 2

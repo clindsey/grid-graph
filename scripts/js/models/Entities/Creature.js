@@ -207,7 +207,7 @@
               return false;
             }
             this.set("path", path);
-            this.set("state", this.get("state").warp("work"));
+            this.set("state", this.state.warp("work"));
             return false;
           }
           workX = workSiteModel.get("x");
