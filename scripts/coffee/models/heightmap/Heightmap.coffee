@@ -33,6 +33,8 @@ define [
       @set "data", @processTiles heightmap
 
     processTiles: (heightmap) ->
+      rnd = new Alea @get "SEED"
+
       data = []
       newMapTiles = []
       xl = @get "worldTileWidth"
@@ -73,6 +75,7 @@ define [
               type: s
               x: x
               y: y
+              seed: rnd()
 
           data[y][x] = mapTileModel
 
