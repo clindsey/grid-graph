@@ -12598,8 +12598,9 @@ define("Alea", function(){});
         return this.set("data", this.processTiles(heightmap));
       },
       processTiles: function(heightmap) {
-        var a, b, c, cx, cy, d, data, e, f, g, h, mapTileModel, n, ne, newMapTiles, nw, o, s, se, sw, w, x, xl, y, yl, _i, _j, _ref, _ref1,
+        var a, b, c, cx, cy, d, data, e, f, g, h, mapTileModel, n, ne, newMapTiles, nw, o, rnd, s, se, sw, w, x, xl, y, yl, _i, _j, _ref, _ref1,
           _this = this;
+        rnd = new Alea(this.get("SEED"));
         data = [];
         newMapTiles = [];
         xl = this.get("worldTileWidth");
@@ -12638,7 +12639,8 @@ define("Alea", function(){});
             mapTileModel = new MapTileModel({
               type: s,
               x: x,
-              y: y
+              y: y,
+              seed: rnd()
             });
             data[y][x] = mapTileModel;
             newMapTiles.push(mapTileModel);
@@ -12784,13 +12786,12 @@ define("Alea", function(){});
 
 (function() {
 
-  define('views/viewport/ViewportTile',["models/heightmap/Heightmap", "Backbone"], function(heightmapModel) {
+  define('views/viewport/ViewportTile',["models/heightmap/Heightmap", "Alea", "Backbone"], function(heightmapModel) {
     var ViewportTile;
     return ViewportTile = Backbone.View.extend({
       tagName: "div",
       className: "map-tile",
       render: function() {
-        this.$el.removeClass("water-tile");
         this.calculateBackgroundPosition();
         this.setBackgroundPosition();
         return this;
@@ -12801,18 +12802,37 @@ define("Alea", function(){});
         return this.render();
       },
       calculateBackgroundPosition: function() {
-        var buildingView, type;
+        var buildingView, seed, type;
         buildingView = this.model.get("buildingView");
         if (buildingView != null) {
           this.backgroundPositionX = buildingView.backgroundPositionX;
           return this.backgroundPositionY = buildingView.backgroundPositionY;
         } else {
           type = this.model.get("type");
-          if (type === 0) {
-            this.$el.addClass("water-tile");
+          this.backgroundPositionX = 0 - ((type % 16) * 32);
+          this.backgroundPositionY = 0 - (~~(type / 16) * 32);
+          if (type === 255) {
+            seed = this.model.get("seed");
+            if (seed > 0.9125) {
+              this.backgroundPositionX = 0;
+              this.backgroundPositionY = -512;
+            }
+            if (seed > 0.9875) {
+              return this.backgroundPositionX = -192;
+            } else if (seed > 0.975) {
+              return this.backgroundPositionX = -160;
+            } else if (seed > 0.9625) {
+              return this.backgroundPositionX = -128;
+            } else if (seed > 0.95) {
+              return this.backgroundPositionX = -96;
+            } else if (seed > 0.9375) {
+              return this.backgroundPositionX = -64;
+            } else if (seed > 0.925) {
+              return this.backgroundPositionX = -32;
+            } else if (seed > 0.9125) {
+              return this.backgroundPositionX = -0;
+            }
           }
-          this.backgroundPositionX = 0 - ((type % 16) * 16);
-          return this.backgroundPositionY = 0 - (~~(type / 16) * 16);
         }
       },
       setListeners: function() {
@@ -12839,8 +12859,8 @@ define("Alea", function(){});
       defaults: {
         x: 0,
         y: 0,
-        width: 21,
-        height: 21
+        width: 32,
+        height: 18
       },
       initialize: function() {
         this.listenTo(this, "change:x", this.updateTiles);
@@ -13772,7 +13792,7 @@ define("Machine", function(){});
               return false;
             }
             this.set("path", path);
-            this.set("state", this.get("state").warp("work"));
+            this.set("state", this.state.warp("work"));
             return false;
           }
           workX = workSiteModel.get("x");
@@ -13857,8 +13877,8 @@ define("Machine", function(){});
           offsetY += worldHeight;
         }
         return this.$el.css({
-          left: (x + offsetX) * 16,
-          top: (y + offsetY) * 16
+          left: (x + offsetX) * (16 * 2),
+          top: (y + offsetY) * (16 * 2)
         });
       }
     });
@@ -13879,7 +13899,7 @@ define("Machine", function(){});
         this.listenTo(this.model, "step", this.onStep);
         this.currentState = this.model.get("stateIdentifier");
         this.currentDirection = this.model.get("direction");
-        return this.setClassName;
+        return this.setClassName();
       },
       onStateChange: function() {
         this.removeClassName();
@@ -13899,8 +13919,8 @@ define("Machine", function(){});
       },
       onStep: function(vector) {
         this.$el.css({
-          "margin-left": 0 - vector[0] * 16,
-          "margin-top": 0 - vector[1] * 16
+          "margin-left": 0 - vector[0] * (16 * 2),
+          "margin-top": 0 - vector[1] * (16 * 2)
         });
         return this.$el.animate({
           "margin-left": 0,
@@ -14353,7 +14373,7 @@ define("Machine", function(){});
         return buildings.sync("update", workSiteModel);
       },
       findJob: function(unemployedCreature) {
-        var availableJobs, targetJob,
+        var availableJobs, shortestPath, targetJob,
           _this = this;
         availableJobs = buildings.where({
           needsWorker: true,
@@ -14363,15 +14383,15 @@ define("Machine", function(){});
           return;
         }
         targetJob = void 0;
+        shortestPath = void 0;
         _.each(availableJobs, function(workSiteModel) {
-          var path, shortestPath;
+          var path;
           path = unemployedCreature.findPath(workSiteModel);
           if (path.length !== 0) {
-            if (typeof shortestPath === "undefined" || shortestPath === null) {
-              shortestPath = path.length;
-            }
+            shortestPath || (shortestPath = path.length);
             if (path.length <= shortestPath) {
-              return targetJob = workSiteModel;
+              targetJob = workSiteModel;
+              return shortestPath = path.length;
             }
           }
         });
@@ -14393,7 +14413,7 @@ define("Machine", function(){});
         });
       },
       findWorker: function(workSiteModel) {
-        var targetEmployee, unemployedCreatures,
+        var shortestPath, targetEmployee, unemployedCreatures,
           _this = this;
         unemployedCreatures = creatures.where({
           workSiteFk: void 0
@@ -14402,15 +14422,15 @@ define("Machine", function(){});
           return;
         }
         targetEmployee = void 0;
+        shortestPath = void 0;
         _.each(unemployedCreatures, function(unemployedCreature) {
-          var path, shortestPath;
+          var path;
           path = unemployedCreature.findPath(workSiteModel);
           if (path.length !== 0) {
-            if (typeof shortestPath === "undefined" || shortestPath === null) {
-              shortestPath = path.length;
-            }
+            shortestPath || (shortestPath = path.length);
             if (path.length <= shortestPath) {
-              return targetEmployee = unemployedCreature;
+              targetEmployee = unemployedCreature;
+              return shortestPath = path.length;
             }
           }
         });
@@ -14445,9 +14465,8 @@ define("Machine", function(){});
   define('views/buildings/Home',["Backbone"], function() {
     var Home;
     return Home = Backbone.View.extend({
-      backgroundPositionX: 0,
-      backgroundPositionY: -272,
-      render: function() {}
+      backgroundPositionX: -224,
+      backgroundPositionY: -576
     });
   });
 
@@ -14476,8 +14495,8 @@ define("Machine", function(){});
   define('views/buildings/ExportCenter',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var ExportCenter;
     return ExportCenter = WorkableView.extend({
-      backgroundPositionX: -160,
-      backgroundPositionY: -272
+      backgroundPositionX: -160 * 2,
+      backgroundPositionY: -272 * 2
     });
   });
 
@@ -14488,11 +14507,8 @@ define("Machine", function(){});
   define('views/buildings/Farm',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var Farm;
     return Farm = WorkableView.extend({
-      backgroundPositionX: -32,
-      backgroundPositionY: -272,
-      calculateBackgroundPosition: function() {
-        return this.backgroundPositionX = 0 - 32 - (3 * 16);
-      }
+      backgroundPositionX: -160,
+      backgroundPositionY: -576
     });
   });
 
@@ -14503,18 +14519,18 @@ define("Machine", function(){});
   define('views/buildings/Road',["models/heightmap/Heightmap", "collections/ViewportTiles", "Backbone"], function(heightmapModel, viewportTiles) {
     var Road;
     return Road = Backbone.View.extend({
-      backgroundPositionX: 0,
-      backgroundPositionY: -256,
+      backgroundPositionX: 0 * 2,
+      backgroundPositionY: -544,
       initialize: function() {
         var roadTileType;
         this.listenTo(this.model, "neighborChanged", this.onNeighborChanged);
         roadTileType = this.calculateRoadTile();
-        return this.backgroundPositionX = 0 - roadTileType * 16;
+        return this.backgroundPositionX = 0 - roadTileType * (16 * 2);
       },
       onNeighborChanged: function() {
         var mapTile, roadTileType;
         roadTileType = this.calculateRoadTile();
-        this.backgroundPositionX = 0 - roadTileType * 16;
+        this.backgroundPositionX = 0 - roadTileType * (16 * 2);
         mapTile = _.first(viewportTiles.where({
           x: this.model.get("x"),
           y: this.model.get("y")
@@ -14548,8 +14564,8 @@ define("Machine", function(){});
   define('views/buildings/Mine',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var Mine;
     return Mine = WorkableView.extend({
-      backgroundPositionX: -16,
-      backgroundPositionY: -272
+      backgroundPositionX: -32,
+      backgroundPositionY: -576
     });
   });
 
@@ -14560,8 +14576,8 @@ define("Machine", function(){});
   define('views/buildings/LumberMill',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var LumberMill;
     return LumberMill = WorkableView.extend({
-      backgroundPositionX: -208,
-      backgroundPositionY: -272
+      backgroundPositionX: -96,
+      backgroundPositionY: -576
     });
   });
 
@@ -14572,8 +14588,8 @@ define("Machine", function(){});
   define('views/buildings/WaterWell',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var WaterWell;
     return WaterWell = WorkableView.extend({
-      backgroundPositionX: -192,
-      backgroundPositionY: -272
+      backgroundPositionX: -192 * 2,
+      backgroundPositionY: -272 * 2
     });
   });
 
@@ -14584,8 +14600,8 @@ define("Machine", function(){});
   define('views/buildings/Factory',["views/buildings/Workable", "Backbone"], function(WorkableView) {
     var Factory;
     return Factory = WorkableView.extend({
-      backgroundPositionX: -160,
-      backgroundPositionY: -272
+      backgroundPositionX: -160 * 2,
+      backgroundPositionY: -272 * 2
     });
   });
 
@@ -14615,8 +14631,8 @@ define("Machine", function(){});
           _this = this;
         this.$el.empty();
         this.$el.css({
-          width: viewportModel.get("width") * 16,
-          height: viewportModel.get("height") * 16
+          width: viewportModel.get("width") * (16 * 2),
+          height: viewportModel.get("height") * (16 * 2)
         });
         this.grid = [];
         viewportTiles.each(function(mapTileModel) {
@@ -14689,8 +14705,8 @@ define("Machine", function(){});
         var tileX, tileY, viewportHeight, viewportWidth, viewportX, viewportY, vx, vy;
         viewportWidth = viewportModel.get("width");
         viewportHeight = viewportModel.get("height");
-        tileX = ~~(jqEvent.target.offsetLeft / 16);
-        tileY = ~~(jqEvent.target.offsetTop / 16);
+        tileX = ~~(jqEvent.target.offsetLeft / (16 * 2));
+        tileY = ~~(jqEvent.target.offsetTop / (16 * 2));
         vx = tileX - ~~(viewportWidth / 2);
         vy = tileY - ~~(viewportHeight / 2);
         viewportX = viewportModel.get("x");
@@ -15169,7 +15185,7 @@ define('text',['module'], function (module) {
 
     return text;
 });
-define('text!views/../../../templates/toolbar/toolbar.html',[],function () { return '<div class="row-fluid">\n  <div class="span-12">\n    <div class="btn-group">\n      <button class="move-btn btn-small btn">\n        <i class="icon-move"></i>\n      </button>\n    </div>\n    <div class="btn-group dropup">\n      <button class="dropdown-btn btn-small btn">\n        <i class="icon-<%= icon %>"></i> <%= label %>\n      </button>\n      <button class="dropdown-toggle btn-small btn" data-toggle="dropdown">\n        <span class="caret"></span>\n      </button>\n      <ul class="dropdown-menu">\n        <li>\n          <a class="road-btn" data-toggle="tooltip" title="Wood: 5" href="#">\n            <i class="icon-road"></i> Road\n          </a>\n        </li>\n        <li>\n          <a class="home-btn" data-toggle="tooltip" title="Wood: 20<br />Food: 10" href="#">\n            <i class="icon-home"></i> House\n          </a>\n        </li>\n        <li>\n          <a class="farm-btn" data-toggle="tooltip" title="Wood: 20" href="#">\n            <i class="icon-leaf"></i> Farm\n          </a>\n        </li>\n        <li>\n          <a class="mine-btn" data-toggle="tooltip" title="Wood: 20<br />Food 10" href="#">\n            <i class="icon-filter"></i> Mine\n          </a>\n        </li>\n        <li>\n          <a class="lumber-mill-btn" data-toggle="tooltip" title="Metal: 30<br />Food 20" href="#">\n            <i class="icon-inbox"></i> Lumber Mill\n          </a>\n        </li>\n        <!--\n        <li>\n          <a class="water-well-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 10<br />Food 10" href="#">\n          <i class="icon-tint"></i> Water Well\n          </a>\n        </li>\n        <li>\n          <a class="factory-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 30<br />Food 20" href="#">\n          <i class="icon-cogs"></i> Factory\n          </a>\n        </li>\n        -->\n      </ul>\n    </div>\n    <div class="btn-group">\n      <button class="remove-btn btn-small btn">\n        <i class="icon-trash"></i>\n      </button>\n    </div>\n  </div>\n</div>\n<div class="row-fluid">\n  <div class="span-12">\n    <span class="wood-count label-success label">0</span>\n    <span class="food-count label-warning label">0</span>\n    <span class="metal-count label-inverse label">0</span>\n  </div>\n</div>\n';});
+define('text!views/../../../templates/toolbar/toolbar.html',[],function () { return '<div class="row-fluid">\n  <div class="span-12">\n    <div class="btn-group">\n      <button class="move-btn btn-small btn-radio btn">\n        <i class="icon-move"></i>\n      </button>\n    </div>\n    <div class="btn-group dropup">\n      <button class="dropdown-btn btn-small btn-radio btn">\n        <i class="icon-<%= icon %>"></i> <%= label %>\n      </button>\n      <button class="dropdown-toggle btn-small btn-radio btn" data-toggle="dropdown">\n        <span class="caret"></span>\n      </button>\n      <ul class="dropdown-menu">\n        <li>\n          <a class="road-btn" data-toggle="tooltip" title="Wood: 5" href="#">\n            <i class="icon-road"></i> Road\n          </a>\n        </li>\n        <li>\n          <a class="home-btn" data-toggle="tooltip" title="Wood: 20<br />Food: 10" href="#">\n            <i class="icon-home"></i> House\n          </a>\n        </li>\n        <li>\n          <a class="farm-btn" data-toggle="tooltip" title="Wood: 20" href="#">\n            <i class="icon-leaf"></i> Solar Collector\n          </a>\n        </li>\n        <li>\n          <a class="mine-btn" data-toggle="tooltip" title="Wood: 20<br />Food 10" href="#">\n            <i class="icon-filter"></i> Crystal Mine\n          </a>\n        </li>\n        <li>\n          <a class="lumber-mill-btn" data-toggle="tooltip" title="Metal: 30<br />Food 20" href="#">\n            <i class="icon-inbox"></i> Gas Extractor\n          </a>\n        </li>\n        <!--\n        <li>\n          <a class="water-well-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 10<br />Food 10" href="#">\n          <i class="icon-tint"></i> Water Well\n          </a>\n        </li>\n        <li>\n          <a class="factory-btn" data-toggle="tooltip" title="Wood: 60<br />Metal: 30<br />Food 20" href="#">\n          <i class="icon-cogs"></i> Factory\n          </a>\n        </li>\n        -->\n      </ul>\n    </div>\n    <div class="btn-group">\n      <button class="remove-btn btn-small btn-radio btn">\n        <i class="icon-trash"></i>\n      </button>\n    </div>\n    <div class="btn-group">\n      <button class="space-map-btn btn-small btn">\n        <i class="icon-globe"></i>\n      </button>\n    </div>\n  </div>\n</div>\n<div class="row-fluid">\n  <div class="span-12">\n    <span class="wood-count label-success label">0</span>\n    <span class="food-count label-warning label">0</span>\n    <span class="metal-count label-inverse label">0</span>\n  </div>\n</div>\n';});
 
 /* ===================================================
  * bootstrap-transition.js v2.3.0
@@ -17463,7 +17479,7 @@ define("Bootstrap", function(){});
       menuOption: "road",
       template: _.template(toolbarTemplate),
       events: {
-        "click .btn": "onBtnClick",
+        "click .btn-radio": "onBtnClick",
         "click .dropdown-btn": "onDropdownBtnClick",
         "click .dropdown-menu .road-btn": "onRoadBtnClick",
         "click .dropdown-menu .export-center-btn": "onExportCenterBtnClick",
@@ -17475,7 +17491,8 @@ define("Bootstrap", function(){});
         "click .dropdown-menu .factory-btn": "onFactoryBtnClick",
         "click .move-btn": "onMoveBtnClick",
         "click .remove-btn": "onRemoveBtnClick",
-        "click .dropdown-menu a": "onDropdownItemClick"
+        "click .dropdown-menu a": "onDropdownItemClick",
+        "click .space-map-btn": "onSpaceMapBtnClick"
       },
       contextIconLookup: {
         "road": {
@@ -17492,15 +17509,15 @@ define("Bootstrap", function(){});
         },
         "farm": {
           icon: "leaf",
-          label: "Farm"
+          label: "Solar Collector"
         },
         "mine": {
           icon: "filter",
-          label: "Mine"
+          label: "Crystal Mine"
         },
         "lumber mill": {
           icon: "inbox",
-          label: "Lumber Mill"
+          label: "Gas Extractor"
         },
         "water well": {
           icon: "tint",
@@ -17521,11 +17538,13 @@ define("Bootstrap", function(){});
       render: function() {
         this.$el.html(this.template(this.contextIconLookup[this.menuOption]));
         this.$(".btn-group > ." + this.activeContext + "-btn").addClass("active btn-primary");
-        this.$("[data-toggle=tooltip]").tooltip({
-          container: "body",
-          placement: "left",
+        /*
+        @$("[data-toggle=tooltip]").tooltip
+          container: "body"
+          placement: "left"
           html: true
-        });
+        */
+
         this.onResourcesChanged();
         return this;
       },
@@ -17543,6 +17562,9 @@ define("Bootstrap", function(){});
         }
         this.$(".btn").removeClass("active btn-primary");
         return $(jqEvent.currentTarget).addClass("active btn-primary");
+      },
+      onSpaceMapBtnClick: function() {
+        return this.trigger("toggleSpaceMap");
       },
       onMoveBtnClick: function() {
         return this.activeContext = "move";
@@ -17635,15 +17657,12 @@ define('text!views/../../../templates/planetList/planetListItem.html',[],functio
       events: {
         "click a": "onListItemClick"
       },
-      initialize: function() {
-        return this.listenTo(this.model, "active", this.onActive);
-      },
       render: function() {
         this.$el.html(this.template(this.model.toJSON()));
+        if (this.options.isActive) {
+          this.$el.addClass("active");
+        }
         return this;
-      },
-      onActive: function() {
-        return this.$el.addClass("active");
       },
       onListItemClick: function(jqEvent) {
         jqEvent.preventDefault();
@@ -17660,19 +17679,32 @@ define('text!views/../../../templates/planetList/planetListItem.html',[],functio
   define('views/planetList/PlanetList',["text!../../../../templates/planetList/planetList.html", "collections/Planets", "views/planetList/PlanetListItem", "Backbone"], function(planetListTemplate, planets, PlanetListItemView) {
     var PlanetListView;
     return PlanetListView = Backbone.View.extend({
-      el: ".planet-list",
+      el: ".map-viewport",
       template: _.template(planetListTemplate),
+      views: [],
+      activePlanet: void 0,
       initialize: function() {
-        return this.listenTo(planets, "reset", this.render);
+        var _this = this;
+        return this.listenTo(planets, "active", function(activePlanet) {
+          _this.activePlanet = activePlanet;
+          return _this.render;
+        });
       },
       render: function() {
         var _this = this;
         this.$el.html(this.template({}));
+        _.each(this.views, function(view) {
+          return view.remove();
+        });
+        this.views = [];
         planets.each(function(planet) {
-          var planetListItemView;
+          var isActive, planetListItemView;
+          isActive = planet.get("seed") === _this.activePlanet.get("seed");
           planetListItemView = new PlanetListItemView({
-            model: planet
+            model: planet,
+            isActive: isActive
           });
+          _this.views.push(planetListItemView);
           return _this.$("ul").append(planetListItemView.render().$el);
         });
         return this;
@@ -17689,7 +17721,8 @@ define('text!views/../../../templates/planetList/planetListItem.html',[],functio
     return AppView = Backbone.View.extend({
       el: document,
       initialize: function() {
-        var galaxy, toolbarView, viewport;
+        var galaxy, isPlanetListOpen, planetListView, toolbarView, viewport;
+        isPlanetListOpen = false;
         toolbarView = new ToolbarView;
         galaxy = new GalaxyModel({
           seed: 20130401,
@@ -17698,17 +17731,24 @@ define('text!views/../../../templates/planetList/planetListItem.html',[],functio
         viewport = new ViewportView({
           toolbarView: toolbarView
         });
-        new PlanetListView;
+        planetListView = new PlanetListView;
         this.listenTo(buildings, "reset", function() {
           viewport.render();
           return creatures.fetch();
         });
         this.listenTo(creatures, "reset", function() {});
         this.listenTo(planets, "active", function(activePlanet) {
+          isPlanetListOpen = false;
           return buildings.fetch();
         });
         galaxy.generate();
-        return planets.first().activate();
+        planets.first().activate();
+        return this.listenTo(toolbarView, "toggleSpaceMap", function() {
+          if (!isPlanetListOpen) {
+            planetListView.render();
+          }
+          return isPlanetListOpen = true;
+        });
       }
     });
   });
