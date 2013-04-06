@@ -8,7 +8,7 @@ define [
 
   Road = Backbone.View.extend
     backgroundPositionX: 0 * 2
-    backgroundPositionY: -256 * 2
+    backgroundPositionY: -544
 
     initialize: ->
       @listenTo @model, "neighborChanged", @onNeighborChanged

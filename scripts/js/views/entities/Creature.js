@@ -11,7 +11,7 @@
         this.listenTo(this.model, "step", this.onStep);
         this.currentState = this.model.get("stateIdentifier");
         this.currentDirection = this.model.get("direction");
-        return this.setClassName;
+        return this.setClassName();
       },
       onStateChange: function() {
         this.removeClassName();

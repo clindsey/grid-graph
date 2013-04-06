@@ -44,13 +44,13 @@ define [
         label: "House"
       "farm":
         icon: "leaf"
-        label: "Farm"
+        label: "Solar Collector"
       "mine":
         icon: "filter"
-        label: "Mine"
+        label: "Crystal Mine"
       "lumber mill":
         icon: "inbox"
-        label: "Lumber Mill"
+        label: "Gas Extractor"
       "water well":
         icon: "tint"
         label: "Water Well"
@@ -72,10 +72,12 @@ define [
 
       @$(".btn-group > .#{@activeContext}-btn").addClass "active btn-primary"
 
+      ###
       @$("[data-toggle=tooltip]").tooltip
         container: "body"
         placement: "left"
         html: true
+      ###
 
       @onResourcesChanged()
 

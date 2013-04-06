@@ -18,7 +18,7 @@ define [
       @currentState = @model.get "stateIdentifier"
       @currentDirection = @model.get "direction"
 
-      @setClassName
+      @setClassName()
 
     onStateChange: ->
       @removeClassName()

@@ -4,7 +4,7 @@
     var Road;
     return Road = Backbone.View.extend({
       backgroundPositionX: 0 * 2,
-      backgroundPositionY: -256 * 2,
+      backgroundPositionY: -544,
       initialize: function() {
         var roadTileType;
         this.listenTo(this.model, "neighborChanged", this.onNeighborChanged);

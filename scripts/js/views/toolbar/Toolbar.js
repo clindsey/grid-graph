@@ -38,15 +38,15 @@
         },
         "farm": {
           icon: "leaf",
-          label: "Farm"
+          label: "Solar Collector"
         },
         "mine": {
           icon: "filter",
-          label: "Mine"
+          label: "Crystal Mine"
         },
         "lumber mill": {
           icon: "inbox",
-          label: "Lumber Mill"
+          label: "Gas Extractor"
         },
         "water well": {
           icon: "tint",
@@ -67,11 +67,13 @@
       render: function() {
         this.$el.html(this.template(this.contextIconLookup[this.menuOption]));
         this.$(".btn-group > ." + this.activeContext + "-btn").addClass("active btn-primary");
-        this.$("[data-toggle=tooltip]").tooltip({
-          container: "body",
-          placement: "left",
+        /*
+        @$("[data-toggle=tooltip]").tooltip
+          container: "body"
+          placement: "left"
           html: true
-        });
+        */
+
         this.onResourcesChanged();
         return this;
       },

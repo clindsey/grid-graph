@@ -3,8 +3,8 @@
   define(["Backbone"], function() {
     var Home;
     return Home = Backbone.View.extend({
-      backgroundPositionX: 0,
-      backgroundPositionY: -272 * 2
+      backgroundPositionX: -224,
+      backgroundPositionY: -576
     });
   });
 

@@ -5,5 +5,5 @@ define [
       WorkableView) ->
 
   Farm = WorkableView.extend
-    backgroundPositionX: -80 * 2
-    backgroundPositionY: -272 * 2
+    backgroundPositionX: -160
+    backgroundPositionY: -576
